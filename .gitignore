@@ -29,6 +29,7 @@ package/
 
 
 # Database Hasura YAML or ENV files
+database.mdb
 moped-database/config.yaml
 moped-database/config.yml
 moped-database/config/*.yaml

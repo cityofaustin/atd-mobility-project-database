@@ -37,18 +37,25 @@ INSERT INTO public.moped_users (staff_uuid, first_name, last_name, title, workgr
 INSERT INTO public.moped_users (staff_uuid, first_name, last_name, title, workgroup, user_id, workgroup_id, cognito_user_id, date_added, email, status_id, roles) VALUES ('e6bb053b-d6bf-4460-b9a5-c5cb7021958d', 'Nathan', 'Wilkes', 'Engineer', 'Active Transportation & Street Design', 2, 1, NULL, '2020-10-09 13:44:02.159184+00', 'nw@emailhost.xyz', 1, '["moped-editor"]');
 INSERT INTO public.moped_users (staff_uuid, first_name, last_name, title, workgroup, user_id, workgroup_id, cognito_user_id, date_added, email, status_id, roles) VALUES ('c1fab7c1-a8ef-4b53-8016-6b9f47db9a01', 'Sergio', 'Garcia', 'Developer', 'Data & Technology Services', 7, 3, NULL, '2020-10-09 13:44:02.159095+00', 'sergio.garcia@emailhost.xyz', 1, '["moped-admin"]');
 INSERT INTO public.moped_entity (entity_uuid, workgroup_name, abbreviated_name, entity_id, affiliated_workgroup, date_added) VALUES ('f30415c5-0b5d-4d92-bb04-7c4f0ea13288', 'Capital Metro', 'CapMetro', 1, NULL, '2020-10-09 13:44:36.783377+00');
+
+--
+-- Milestones
+--
 INSERT INTO public.moped_milestones (milestone_name, milestone_description, milestone_order, required_milestone, milestone_id) VALUES ('actual construction start date', '', 7, true, 3);
 INSERT INTO public.moped_milestones (milestone_name, milestone_description, milestone_order, required_milestone, milestone_id) VALUES ('actual end date', '', 1, true, 4);
 INSERT INTO public.moped_milestones (milestone_name, milestone_description, milestone_order, required_milestone, milestone_id) VALUES ('actual resurfacing date', '', 8, true, 5);
 INSERT INTO public.moped_milestones (milestone_name, milestone_description, milestone_order, required_milestone, milestone_id) VALUES ('resurfacing date', '', 8, false, 9);
 INSERT INTO public.moped_milestones (milestone_name, milestone_description, milestone_order, required_milestone, milestone_id) VALUES ('check in on project status', '', 20, true, 10);
 INSERT INTO public.moped_milestones (milestone_name, milestone_description, milestone_order, required_milestone, milestone_id) VALUES ('public meeting', '', 21, true, 11);
-INSERT INTO public.moped_phases (phase_name, phase_description, phase_rank, phase_average_length, required_phase, phase_id) VALUES ('complete', NULL, NULL, NULL, NULL, 1);
-INSERT INTO public.moped_phases (phase_name, phase_description, phase_rank, phase_average_length, required_phase, phase_id) VALUES ('construction', NULL, NULL, NULL, NULL, 2);
-INSERT INTO public.moped_phases (phase_name, phase_description, phase_rank, phase_average_length, required_phase, phase_id) VALUES ('design', NULL, NULL, NULL, NULL, 3);
-INSERT INTO public.moped_phases (phase_name, phase_description, phase_rank, phase_average_length, required_phase, phase_id) VALUES ('scoping', NULL, NULL, NULL, NULL, 5);
-INSERT INTO public.moped_phases (phase_name, phase_description, phase_rank, phase_average_length, required_phase, phase_id) VALUES ('planned', NULL, NULL, NULL, NULL, 6);
-INSERT INTO public.moped_phases (phase_name, phase_description, phase_rank, phase_average_length, required_phase, phase_id) VALUES ('potential', NULL, NULL, NULL, NULL, 7);
+
+--
+-- Phases
+--
+-- For now, we have removed phases seeds since they are being inserted in the migrations.
+
+--
+-- Projects
+--
 INSERT INTO public.moped_project (project_uuid, project_name, project_description, project_description_public, "ecapris_subproject_id", project_importance, project_order, current_status, project_id, timeline_id, current_phase, end_date, project_length, start_date, fiscal_year, capitally_funded, project_priority, date_added, added_by) VALUES ('e3bd46b2-2a80-486a-b1d2-99be709b73d5', 'Dobie Middle Phase 1', 'feasibility study for bike lanes near Dobie MS', null, null, null, null, 'Active', 1, null, 'Planned', null, null, '2020-04-20', '2020', false, 'Low', '2020-12-16 19:41:25.734687', null);
 INSERT INTO public.moped_project (project_uuid, project_name, project_description, project_description_public, "ecapris_subproject_id", project_importance, project_order, current_status, project_id, timeline_id, current_phase, end_date, project_length, start_date, fiscal_year, capitally_funded, project_priority, date_added, added_by) VALUES ('011c34b9-1514-498a-a8ed-067ba5a37638', 'Cook Elementary Phase 2', 'Curb extensions in coordination with sidewalk rehab project', null, null, null, null, 'Hold', 2, null, 'Hold', null, null, '2020-10-12', '2021', false, 'Medium', '2020-12-16 19:41:25.734931', null);
 INSERT INTO public.moped_project (project_uuid, project_name, project_description, project_description_public, "ecapris_subproject_id", project_importance, project_order, current_status, project_id, timeline_id, current_phase, end_date, project_length, start_date, fiscal_year, capitally_funded, project_priority, date_added, added_by) VALUES ('03bdea56-d6f7-40f8-9827-76a473beddf7', 'Southern Walnut Creek Trail', 'Southern Walnut Creek Trail connection from Alta Trailhead development', null, null, null, null, 'Active', 3, null, 'Construction', null, null, '2019-11-12', '2020', false, 'Low', '2020-12-16 19:41:25.735082', null);
@@ -56,12 +63,21 @@ INSERT INTO public.moped_project (project_uuid, project_name, project_descriptio
 INSERT INTO public.moped_project (project_uuid, project_name, project_description, project_description_public, "ecapris_subproject_id", project_importance, project_order, current_status, project_id, timeline_id, current_phase, end_date, project_length, start_date, fiscal_year, capitally_funded, project_priority, date_added, added_by) VALUES ('4dddbdc2-db49-4e19-b81f-17dc76ff5d2e', 'Burnet Rd. at Rutland Dr._2018 Transit', 'Add bus stop concrete pad to median and tighten slip lane to create a safer crossing', null, null, null, null, 'Complete', 5, null, 'Complete', null, null, '2018-08-07', '2019', false, 'Low', '2020-12-16 19:41:25.735364', null);
 INSERT INTO public.moped_project (project_uuid, project_name, project_description, project_description_public, "ecapris_subproject_id", project_importance, project_order, current_status, project_id, timeline_id, current_phase, end_date, project_length, start_date, fiscal_year, capitally_funded, project_priority, date_added, added_by) VALUES ('d6b5a146-386b-4b78-9e33-312187fd6263', 'Tilley at 51st Street intersection fix', 'Improvements to geometry of partial protected intersection constructed by Catellus at Tilley and 51st Street', null, null, null, null, 'Active', 6, null, 'Design', null, null, '2019-06-10', '2019', false, 'Medium', '2020-12-16 19:41:25.735499', null);
 INSERT INTO public.moped_project (project_uuid, project_name, project_description, project_description_public, "ecapris_subproject_id", project_importance, project_order, current_status, project_id, timeline_id, current_phase, end_date, project_length, start_date, fiscal_year, capitally_funded, project_priority, date_added, added_by) VALUES ('a5342871-f316-4cf3-90d5-38e08978e99b', 'HW 360 Westlake Drive/Cedar Street Project', 'Project as part of TXDOT HW 360 program', null, null, null, null, 'Active', 7, null, 'Planned', null, null, '2020-08-27', '2021', false, 'Medium', '2020-12-16 19:41:25.738888', null);
+
+--
+-- Project Milestones
+--
 INSERT INTO public.moped_proj_milestones (milestone_name, milestone_description, milestone_order, milestone_start, milestone_end, milestone_length, milestone_privacy, days_left, is_current_milestone, completed, project_milestone_id, project_id, project_timeline_id, milestone_owner_id, date_added) VALUES ('check in on project status', '', 7, '2020-05-20', '2020-06-20', 30, true, 0, false, false, 1, 1, 1, NULL, '2020-10-09 14:35:56.695504+00');
 INSERT INTO public.moped_proj_milestones (milestone_name, milestone_description, milestone_order, milestone_start, milestone_end, milestone_length, milestone_privacy, days_left, is_current_milestone, completed, project_milestone_id, project_id, project_timeline_id, milestone_owner_id, date_added) VALUES ('actual resurfacing date', NULL, 8, '2020-04-04', '2020-10-10', NULL, NULL, 65, true, false, 2, 2, NULL, NULL, '2020-10-09 14:35:56.695654+00');
 INSERT INTO public.moped_proj_milestones (milestone_name, milestone_description, milestone_order, milestone_start, milestone_end, milestone_length, milestone_privacy, days_left, is_current_milestone, completed, project_milestone_id, project_id, project_timeline_id, milestone_owner_id, date_added) VALUES ('public meeting', NULL, 15, '2020-04-05', '2020-10-11', NULL, NULL, 66, true, false, 3, 3, NULL, NULL, '2020-10-09 14:35:56.695658+00');
-INSERT INTO public.moped_proj_phases (phase_name, phase_description, phase_rank, completion_percentage, phase_status, phase_privacy, phase_start, phase_end, phase_priority, is_current_phase, completed, project_phase_id, project_id, started_by_user_id, completed_by_user_id, date_added) VALUES ('construction', NULL, NULL, 1, NULL, NULL, NULL, NULL, 1, NULL, true, 12, 1, NULL, NULL, '2020-10-09 14:39:05.06761+00');
+
+--
+-- Projet Phases
+--
+INSERT INTO public.moped_proj_phases (phase_name, phase_description, phase_rank, completion_percentage, phase_status, phase_privacy, phase_start, phase_end, phase_priority, is_current_phase, completed, project_phase_id, project_id, started_by_user_id, completed_by_user_id, date_added) VALUES ('construction', NULL, NULL, 1, NULL, NULL, NULL, NULL, 1, NULL, true, 1, 1, NULL, NULL, '2020-10-09 14:39:05.06761+00');
 INSERT INTO public.moped_proj_phases (phase_name, phase_description, phase_rank, completion_percentage, phase_status, phase_privacy, phase_start, phase_end, phase_priority, is_current_phase, completed, project_phase_id, project_id, started_by_user_id, completed_by_user_id, date_added) VALUES ('complete', NULL, NULL, 100, NULL, NULL, '2020-04-01', '2020-04-11', 3, NULL, true, 2, 2, NULL, NULL, '2020-10-09 14:39:05.067764+00');
-INSERT INTO public.moped_proj_phases (phase_name, phase_description, phase_rank, completion_percentage, phase_status, phase_privacy, phase_start, phase_end, phase_priority, is_current_phase, completed, project_phase_id, project_id, started_by_user_id, completed_by_user_id, date_added) VALUES ('construction', NULL, NULL, 100, NULL, NULL, '2020-08-10', NULL, 4, NULL, true, 11, 2, NULL, NULL, '2020-10-09 14:39:05.067767+00');
+INSERT INTO public.moped_proj_phases (phase_name, phase_description, phase_rank, completion_percentage, phase_status, phase_privacy, phase_start, phase_end, phase_priority, is_current_phase, completed, project_phase_id, project_id, started_by_user_id, completed_by_user_id, date_added) VALUES ('construction', NULL, NULL, 100, NULL, NULL, '2020-08-10', NULL, 4, NULL, true, 3, 2, NULL, NULL, '2020-10-09 14:39:05.067767+00');
+
 INSERT INTO public.moped_status (status_name, status_flag, status_priority, status_id) VALUES ('active', NULL, NULL, 1);
 INSERT INTO public.moped_status (status_name, status_flag, status_priority, status_id) VALUES ('potential', NULL, NULL, 2);
 INSERT INTO public.moped_status (status_name, status_flag, status_priority, status_id) VALUES ('complete', NULL, NULL, 3);

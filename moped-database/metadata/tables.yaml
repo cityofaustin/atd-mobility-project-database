@@ -3314,6 +3314,170 @@
       name: MOPED_API_EVENT_NAME
 - table:
     schema: public
+    name: moped_proj_subphases
+  insert_permissions:
+  - role: moped-admin
+    permission:
+      check: {}
+      columns:
+      - project_subphase_id
+      - project_id
+      - subphase_name
+      - subphase_description
+      - subphase_rank
+      - completion_percentage
+      - subphase_status
+      - subphase_privacy
+      - subphase_start
+      - subphase_end
+      - subphase_priority
+      - subphase_date_type
+      - subphase_related_phase_id
+      - is_current_subphase
+      - completed
+      - started_by_user_id
+      - completed_by_user_id
+      - date_added
+      backend_only: false
+  - role: moped-editor
+    permission:
+      check: {}
+      columns:
+      - completed
+      - is_current_subphase
+      - subphase_privacy
+      - subphase_end
+      - subphase_start
+      - completed_by_user_id
+      - completion_percentage
+      - project_id
+      - project_subphase_id
+      - started_by_user_id
+      - subphase_priority
+      - subphase_rank
+      - subphase_related_phase_id
+      - subphase_date_type
+      - subphase_description
+      - subphase_name
+      - subphase_status
+      - date_added
+      backend_only: false
+  select_permissions:
+  - role: moped-admin
+    permission:
+      columns:
+      - completed
+      - is_current_subphase
+      - subphase_privacy
+      - subphase_end
+      - subphase_start
+      - completed_by_user_id
+      - completion_percentage
+      - project_id
+      - project_subphase_id
+      - started_by_user_id
+      - subphase_priority
+      - subphase_rank
+      - subphase_related_phase_id
+      - subphase_date_type
+      - subphase_description
+      - subphase_name
+      - subphase_status
+      - date_added
+      filter: {}
+  - role: moped-editor
+    permission:
+      columns:
+      - completed
+      - is_current_subphase
+      - subphase_privacy
+      - subphase_end
+      - subphase_start
+      - completed_by_user_id
+      - completion_percentage
+      - project_id
+      - project_subphase_id
+      - started_by_user_id
+      - subphase_priority
+      - subphase_rank
+      - subphase_related_phase_id
+      - subphase_date_type
+      - subphase_description
+      - subphase_name
+      - subphase_status
+      - date_added
+      filter: {}
+  - role: moped-viewer
+    permission:
+      columns:
+      - completed
+      - is_current_subphase
+      - subphase_privacy
+      - subphase_end
+      - subphase_start
+      - completed_by_user_id
+      - completion_percentage
+      - project_id
+      - project_subphase_id
+      - started_by_user_id
+      - subphase_priority
+      - subphase_rank
+      - subphase_related_phase_id
+      - subphase_date_type
+      - subphase_description
+      - subphase_name
+      - subphase_status
+      - date_added
+      filter: {}
+  update_permissions:
+  - role: moped-admin
+    permission:
+      columns:
+      - completed
+      - is_current_subphase
+      - subphase_privacy
+      - subphase_end
+      - subphase_start
+      - completed_by_user_id
+      - completion_percentage
+      - project_id
+      - project_subphase_id
+      - started_by_user_id
+      - subphase_priority
+      - subphase_rank
+      - subphase_related_phase_id
+      - subphase_date_type
+      - subphase_description
+      - subphase_name
+      - subphase_status
+      - date_added
+      filter: {}
+      check: null
+  - role: moped-editor
+    permission:
+      columns:
+      - completed
+      - is_current_subphase
+      - subphase_privacy
+      - subphase_end
+      - subphase_start
+      - completed_by_user_id
+      - completion_percentage
+      - project_id
+      - project_subphase_id
+      - started_by_user_id
+      - subphase_priority
+      - subphase_rank
+      - subphase_related_phase_id
+      - subphase_date_type
+      - subphase_description
+      - subphase_name
+      - subphase_status
+      - date_added
+      filter: {}
+      check: null
+- table:
+    schema: public
     name: moped_proj_timeline
   insert_permissions:
   - role: moped-admin
@@ -4017,6 +4181,93 @@
       - status_id
       - status_priority
       - status_name
+      filter: {}
+      check: null
+- table:
+    schema: public
+    name: moped_subphases
+  insert_permissions:
+  - role: moped-admin
+    permission:
+      check: {}
+      columns:
+      - related_phase_id
+      - required_subphase
+      - subphase_average_length
+      - subphase_description
+      - subphase_id
+      - subphase_name
+      - subphase_rank
+      backend_only: false
+  - role: moped-editor
+    permission:
+      check: {}
+      columns:
+      - related_phase_id
+      - required_subphase
+      - subphase_average_length
+      - subphase_description
+      - subphase_id
+      - subphase_name
+      - subphase_rank
+      backend_only: false
+  select_permissions:
+  - role: moped-admin
+    permission:
+      columns:
+      - required_subphase
+      - related_phase_id
+      - subphase_average_length
+      - subphase_id
+      - subphase_rank
+      - subphase_description
+      - subphase_name
+      filter: {}
+  - role: moped-editor
+    permission:
+      columns:
+      - required_subphase
+      - related_phase_id
+      - subphase_average_length
+      - subphase_id
+      - subphase_rank
+      - subphase_description
+      - subphase_name
+      filter: {}
+  - role: moped-viewer
+    permission:
+      columns:
+      - required_subphase
+      - related_phase_id
+      - subphase_average_length
+      - subphase_id
+      - subphase_rank
+      - subphase_description
+      - subphase_name
+      filter: {}
+  update_permissions:
+  - role: moped-admin
+    permission:
+      columns:
+      - required_subphase
+      - related_phase_id
+      - subphase_average_length
+      - subphase_id
+      - subphase_rank
+      - subphase_description
+      - subphase_name
+      filter: {}
+      check: null
+  - role: moped-editor
+    permission:
+      columns:
+      - required_subphase
+      - related_phase_id
+      - subphase_average_length
+      - subphase_id
+      - subphase_rank
+      - subphase_description
+      - subphase_name
       filter: {}
       check: null
 - table:
