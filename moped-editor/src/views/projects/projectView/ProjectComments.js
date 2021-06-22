@@ -19,7 +19,6 @@ import AddBoxIcon from "@material-ui/icons/AddBox";
 import { makeStyles } from "@material-ui/core/styles";
 import { getSessionDatabaseData } from "src/auth/user";
 import { useQuery, useMutation } from "@apollo/client";
-import { gql } from "apollo-boost";
 import { useParams } from "react-router-dom";
 import parse from "html-react-parser";
 import DOMPurify from "dompurify";
@@ -28,28 +27,12 @@ import "react-quill/dist/quill.snow.css";
 import ProjectSaveButton from "../newProjectView/ProjectSaveButton";
 import ProjectCommentEdit from "./ProjectCommentEdit";
 
-const COMMENTS_QUERY = gql`
-  query getProjectComments($projectId: Int!) {
-    moped_proj_notes(where: { project_id: { _eq: $projectId } }) {
-      added_by
-      project_note
-      project_id
-      date_created
-      project_note_id
-    }
-  }
-`;
-
-const ADD_PROJECT_COMMENT = gql`
-  mutation AddProjectComment($objects: [moped_proj_notes_insert_input!]!) {
-    insert_moped_proj_notes(objects: $objects) {
-      returning {
-        project_id
-        project_note
-      }
-    }
-  }
-`;
+import {
+  COMMENTS_QUERY,
+  ADD_PROJECT_COMMENT,
+  UPDATE_PROJECT_COMMENT,
+  DELETE_PROJECT_COMMENT,
+} from "../../../queries/comments";
 
 const quillModules = {
   toolbar: [
