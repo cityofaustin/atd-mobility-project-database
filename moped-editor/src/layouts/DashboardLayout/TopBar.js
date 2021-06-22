@@ -6,13 +6,11 @@ import {
   AppBar,
   Avatar,
   Box,
-  Hidden,
   IconButton,
   Toolbar,
   makeStyles,
 } from "@material-ui/core";
 import MenuIcon from "@material-ui/icons/Menu";
-import { LogOut as LogOutIcon } from "react-feather";
 import Logo from "src/components/Logo";
 import { getSessionDatabaseData, useUser } from "../../auth/user";
 import emailToInitials from "../../utils/emailToInitials";
@@ -25,9 +23,9 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const TopBar = ({ className, onMobileNavOpen, ...rest }) => {
+const TopBar = ({ className, onOpen, ...rest }) => {
   const classes = useStyles();
-  const { user, logout } = useUser();
+  const { user } = useUser();
 
   const userDbData = getSessionDatabaseData();
 
@@ -59,16 +57,9 @@ const TopBar = ({ className, onMobileNavOpen, ...rest }) => {
             )}
           </div>
         </Box>
-        <Hidden mdDown>
-          <IconButton color="inherit" onClick={logout}>
-            <LogOutIcon />
-          </IconButton>
-        </Hidden>
-        <Hidden lgUp>
-          <IconButton color="inherit" onClick={onMobileNavOpen}>
-            <MenuIcon />
-          </IconButton>
-        </Hidden>
+        <IconButton color="inherit" onClick={onOpen}>
+          <MenuIcon />
+        </IconButton>
       </Toolbar>
     </AppBar>
   );
@@ -76,7 +67,7 @@ const TopBar = ({ className, onMobileNavOpen, ...rest }) => {
 
 TopBar.propTypes = {
   className: PropTypes.string,
-  onMobileNavOpen: PropTypes.func,
+  onNavOpen: PropTypes.func,
 };
 
 export default TopBar;

@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import PropTypes from "prop-types";
-import { Box, Drawer, Hidden, List, makeStyles } from "@material-ui/core";
+import { Box, Drawer, List, makeStyles } from "@material-ui/core";
 import { EmojiTransportation } from "@material-ui/icons";
 import {
   BarChart as BarChartIcon,
@@ -18,11 +18,6 @@ const items = [
     title: "Dashboard",
   },
   {
-    href: "/moped/staff",
-    icon: UsersIcon,
-    title: "Staff",
-  },
-  {
     href: "/moped/projects",
     icon: EmojiTransportation,
     title: "Projects",
@@ -33,6 +28,11 @@ const items = [
     title: "Account",
   },
   {
+    href: "/moped/staff",
+    icon: UsersIcon,
+    title: "Staff",
+  },
+  {
     href: "/moped/logout",
     icon: LogOutIcon,
     title: "Logout",
@@ -40,13 +40,8 @@ const items = [
 ];
 
 const useStyles = makeStyles(() => ({
-  mobileDrawer: {
+  navDrawer: {
     width: 256,
-  },
-  desktopDrawer: {
-    width: 256,
-    top: 64,
-    height: "calc(100% - 64px)",
   },
   avatar: {
     cursor: "pointer",
@@ -55,13 +50,13 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const NavBar = ({ onMobileClose, openMobile }) => {
+const NavBar = ({ isOpen, onClose }) => {
   const classes = useStyles();
   const location = useLocation();
 
   useEffect(() => {
-    if (openMobile && onMobileClose) {
-      onMobileClose();
+    if (isOpen && onClose) {
+      onClose();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
@@ -85,40 +80,26 @@ const NavBar = ({ onMobileClose, openMobile }) => {
   );
 
   return (
-    <>
-      <Hidden lgUp>
-        <Drawer
-          anchor="left"
-          classes={{ paper: classes.mobileDrawer }}
-          onClose={onMobileClose}
-          open={openMobile}
-          variant="temporary"
-        >
-          {content}
-        </Drawer>
-      </Hidden>
-      <Hidden mdDown>
-        <Drawer
-          anchor="left"
-          classes={{ paper: classes.desktopDrawer }}
-          open
-          variant="persistent"
-        >
-          {content}
-        </Drawer>
-      </Hidden>
-    </>
+    <Drawer
+      anchor="left"
+      classes={{ paper: classes.navDrawer }}
+      onClose={onClose}
+      open={isOpen}
+      variant="temporary"
+    >
+      {content}
+    </Drawer>
   );
 };
 
 NavBar.propTypes = {
-  onMobileClose: PropTypes.func,
-  openMobile: PropTypes.bool,
+  onClose: PropTypes.func,
+  isOpen: PropTypes.bool,
 };
 
 NavBar.defaultProps = {
-  onMobileClose: () => {},
-  openMobile: false,
+  onClose: () => {},
+  isOpen: false,
 };
 
 export default NavBar;

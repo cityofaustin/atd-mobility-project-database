@@ -94,17 +94,32 @@ const fieldParsers = {
   roles: role => [role],
 };
 
+/**
+ * Generates a StaffForm Component
+ * @param {Object} editFormData - The form data
+ * @param {string} userCognitoId - The User's Cognito UUID (if available)
+ * @returns {JSX.Element}
+ * @constructor
+ */
 const StaffForm = ({ editFormData = null, userCognitoId }) => {
   const classes = useStyles();
   let navigate = useNavigate();
   const isNewUser = editFormData === null;
 
+  /**
+   * Make use of the useUserApi to retrieve the requestApi function and
+   * api request loading state and errors from the api.
+   */
   const {
     loading: userApiLoading,
     requestApi,
     error: apiErrors,
+    setError,
+    setLoading,
   } = useUserApi();
+
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isApiErrorOpen, setIsApiErrorOpen] = useState(false);
 
   const {
     register,
@@ -121,6 +136,10 @@ const StaffForm = ({ editFormData = null, userCognitoId }) => {
 
   const { isSubmitting, dirtyFields } = formState;
 
+  /**
+   * Controls the onSubmit data event
+   * @param {Object} data - The data being submitted
+   */
   const onSubmit = data => {
     // Parse values with fns from config
     Object.entries(fieldParsers).forEach(([fieldName, parser]) => {
@@ -156,6 +175,11 @@ const StaffForm = ({ editFormData = null, userCognitoId }) => {
     data: workgroups,
   } = useQuery(WORKGROUPS_QUERY);
 
+  /**
+   * Updates the workgroup field state
+   * @param {Object} e - Event
+   * @returns {string} - The workgroup name
+   */
   const updateWorkgroupFields = e => {
     const workgroupId = e.nativeEvent.target.dataset.id;
     const workgroupName = e.target.value;
@@ -167,6 +191,9 @@ const StaffForm = ({ editFormData = null, userCognitoId }) => {
     return workgroupName;
   };
 
+  /**
+   * Handler for Delete Confirm button
+   */
   const handleDeleteConfirm = () => {
     const requestPath = "/users/" + userCognitoId;
     const deleteCallback = () => setIsDeleteModalOpen(false);
@@ -177,6 +204,18 @@ const StaffForm = ({ editFormData = null, userCognitoId }) => {
       callback: deleteCallback,
     });
   };
+
+  /**
+   * Clears the API errors window and closes it
+   */
+  const clearApiErrors = () => {
+    setIsApiErrorOpen(false);
+    setError(null);
+    setLoading(false);
+  };
+
+  // If there are any api errors, and the modal is closed, open it
+  if (apiErrors && !isApiErrorOpen) setIsApiErrorOpen(true);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -359,7 +398,7 @@ const StaffForm = ({ editFormData = null, userCognitoId }) => {
           </FormControl>
         </Grid>
         <Grid item xs={12} md={6}>
-          {userApiLoading || isSubmitting ? (
+          {!apiErrors && (userApiLoading || isSubmitting) ? (
             <CircularProgress />
           ) : (
             <>
@@ -423,6 +462,26 @@ const StaffForm = ({ editFormData = null, userCognitoId }) => {
                   Yes
                 </Button>
               )}
+            </DialogActions>
+          </Dialog>
+          <Dialog
+            open={!!apiErrors}
+            onClose={clearApiErrors}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <DialogTitle id="alert-dialog-title">
+              {"Error While Creating User"}
+            </DialogTitle>
+            <DialogContent>
+              <DialogContentText id="alert-dialog-description">
+                {(apiErrors?.error?.other ?? []).join(", ")}
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={clearApiErrors} color="primary" autoFocus>
+                Close
+              </Button>
             </DialogActions>
           </Dialog>
         </Grid>

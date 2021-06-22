@@ -9,7 +9,6 @@ import {
   Icon,
   InputLabel,
   MenuItem,
-  Paper,
   Select,
   Snackbar,
   Switch,
@@ -196,7 +195,9 @@ const DataTable = ({ fieldConfiguration, data, loading, error, refetch }) => {
 
     switch (fieldType) {
       case "date":
-        formattedValue = new Date(formattedValue).toLocaleDateString('en-US', {timeZone: 'UTC'});
+        formattedValue = new Date(formattedValue).toLocaleDateString("en-US", {
+          timeZone: "UTC",
+        });
         break;
       case "boolean":
         formattedValue = formattedValue === true;
@@ -427,100 +428,98 @@ const DataTable = ({ fieldConfiguration, data, loading, error, refetch }) => {
       {loading || lookupTablesLoading ? (
         <CircularProgress />
       ) : (
-        <Paper>
-          <Grid container>
-            {Object.keys(fieldConfiguration.fields).map(field => {
-              const fieldType =
-                fieldConfiguration.fields[field]?.type ?? "string";
+        <Grid container>
+          {Object.keys(fieldConfiguration.fields).map(field => {
+            const fieldType =
+              fieldConfiguration.fields[field]?.type ?? "string";
 
-              return (
-                <Grid
-                  item
-                  key={fieldConfiguration.fields[field]?.label}
-                  className={classes.fieldGridItem}
-                  xs={12}
-                  sm={6}
-                >
-                  <Box mb={2}>
-                    {((isEditing && editField !== field) || !isEditing) && (
-                      <h4>
-                        {fieldConfiguration.fields[field]?.label ?? "Unknown"}
-                      </h4>
-                    )}
-                    {(isEditing && editField === field) ||
-                    fieldType === "boolean" ? (
-                      <form onSubmit={e => handleAcceptClick(e)}>
-                        <Grid container fullWidth>
-                          <Grid item xs={12} sm={9}>
-                            {fieldType === "select" && (
-                              <>{renderSelectEdit(field, getValue(field))}</>
-                            )}
-                            {fieldType === "string" && (
-                              <>{renderStringEdit(field, getValue(field))}</>
-                            )}
-                            {fieldType === "date" && (
-                              <>{renderDateEdit(field, getValue(field))}</>
-                            )}
-                            {fieldType === "boolean" && (
-                              <>{renderBooleanEdit(field, getValue(field))}</>
-                            )}
-                          </Grid>
-                          {fieldType !== "boolean" && (
-                            <Grid
-                              item
-                              xs={12}
-                              sm={3}
-                              className={classes.fieldGridItemButtons}
-                            >
-                              <Icon
-                                className={classes.editIconConfirm}
-                                onClick={e => handleAcceptClick(e)}
-                              >
-                                check
-                              </Icon>
-                              <Icon
-                                className={classes.editIconConfirm}
-                                onClick={e => handleCancelClick(e)}
-                              >
-                                close
-                              </Icon>
-                            </Grid>
+            return (
+              <Grid
+                item
+                key={fieldConfiguration.fields[field]?.label}
+                className={classes.fieldGridItem}
+                xs={12}
+                sm={fieldConfiguration.fields[field]?.widthSmallAndLarger ?? 6}
+              >
+                <Box>
+                  {((isEditing && editField !== field) || !isEditing) && (
+                    <h4>
+                      {fieldConfiguration.fields[field]?.label ?? "Unknown"}
+                    </h4>
+                  )}
+                  {(isEditing && editField === field) ||
+                  fieldType === "boolean" ? (
+                    <form onSubmit={e => handleAcceptClick(e)}>
+                      <Grid container fullWidth>
+                        <Grid item xs={12} sm={9}>
+                          {fieldType === "select" && (
+                            <>{renderSelectEdit(field, getValue(field))}</>
+                          )}
+                          {fieldType === "string" && (
+                            <>{renderStringEdit(field, getValue(field))}</>
+                          )}
+                          {fieldType === "date" && (
+                            <>{renderDateEdit(field, getValue(field))}</>
+                          )}
+                          {fieldType === "boolean" && (
+                            <>{renderBooleanEdit(field, getValue(field))}</>
                           )}
                         </Grid>
-                      </form>
-                    ) : (
-                      <Typography
-                        id={"label-" + field}
-                        className={
-                          fieldConfiguration.fields[field]?.labelStyle ?? null
-                        }
-                        variant="body1"
-                      >
-                        {fieldConfiguration.fields[field].format
-                          ? fieldConfiguration.fields[field].format(
-                              getValue(field)
-                            )
-                          : formatValue(field)}
-                        {fieldConfiguration.fields[field].editable &&
-                          !isEditing &&
-                          fieldType !== "boolean" && (
-                            <div>
-                              <Icon
-                                className={classes.editIcon}
-                                onClick={() => handleFieldEdit(field)}
-                              >
-                                create
-                              </Icon>
-                            </div>
-                          )}
-                      </Typography>
-                    )}
-                  </Box>
-                </Grid>
-              );
-            })}
-          </Grid>
-        </Paper>
+                        {fieldType !== "boolean" && (
+                          <Grid
+                            item
+                            xs={12}
+                            sm={3}
+                            className={classes.fieldGridItemButtons}
+                          >
+                            <Icon
+                              className={classes.editIconConfirm}
+                              onClick={e => handleAcceptClick(e)}
+                            >
+                              check
+                            </Icon>
+                            <Icon
+                              className={classes.editIconConfirm}
+                              onClick={e => handleCancelClick(e)}
+                            >
+                              close
+                            </Icon>
+                          </Grid>
+                        )}
+                      </Grid>
+                    </form>
+                  ) : (
+                    <Typography
+                      id={"label-" + field}
+                      className={
+                        fieldConfiguration.fields[field]?.labelStyle ?? null
+                      }
+                      variant="body1"
+                    >
+                      {fieldConfiguration.fields[field].format
+                        ? fieldConfiguration.fields[field].format(
+                            getValue(field)
+                          )
+                        : formatValue(field)}
+                      {fieldConfiguration.fields[field].editable &&
+                        !isEditing &&
+                        fieldType !== "boolean" && (
+                          <div>
+                            <Icon
+                              className={classes.editIcon}
+                              onClick={() => handleFieldEdit(field)}
+                            >
+                              create
+                            </Icon>
+                          </div>
+                        )}
+                    </Typography>
+                  )}
+                </Box>
+              </Grid>
+            );
+          })}
+        </Grid>
       )}
       <Snackbar
         anchorOrigin={{ vertical: "top", horizontal: "right" }}

@@ -10,7 +10,7 @@ export const StaffListViewFiltersConf = {
   fields: [
     {
       name: "first_name",
-      label: "First Name",
+      label: "First name",
       placeholder: "Enter first name",
       type: "string",
       defaultOperator: "string_contains_case_insensitive",
@@ -18,13 +18,11 @@ export const StaffListViewFiltersConf = {
         "string_contains_case_insensitive",
         "string_begins_with_case_insensitive",
         "string_ends_with_case_insensitive",
-        "string_is_null",
-        "string_is_not_null",
       ],
     },
     {
       name: "last_name",
-      label: "Last Name",
+      label: "Last name",
       placeholder: "Enter last name",
       type: "string",
       defaultOperator: "string_contains_case_insensitive",
@@ -32,8 +30,6 @@ export const StaffListViewFiltersConf = {
         "string_contains_case_insensitive",
         "string_begins_with_case_insensitive",
         "string_ends_with_case_insensitive",
-        "string_is_null",
-        "string_is_not_null",
       ],
     },
     {
@@ -59,15 +55,6 @@ export const StaffListViewFiltersConf = {
       label: "Workgroup",
       placeholder: "Enter Workgroup",
       type: "string",
-      operators: [
-        "*", // All of them (shortcut)
-      ],
-    },
-    {
-      name: "is_coa_staff",
-      label: "Is COA Staff",
-      placeholder: "Select Staff",
-      type: "boolean",
       operators: [
         "*", // All of them (shortcut)
       ],

@@ -41,7 +41,16 @@ const ProjectSummaryMap = ({ projectExtentGeoJSON, setIsEditing }) => {
   const mapRef = useRef();
   const featureCount = countFeatures(projectExtentGeoJSON);
 
+  /**
+   * Make use of a custom hook that returns a vector tile layer hover event handler
+   * and the details to place and populate a tooltip.
+   */
   const { handleLayerHover, featureText, hoveredCoords } = useHoverLayer();
+
+  /**
+   * Make use of a custom hook that initializes a map viewport
+   * and fits it to a provided feature collection.
+   */
   const [viewport, setViewport] = useFeatureCollectionToFitBounds(
     mapRef,
     projectExtentGeoJSON
@@ -49,27 +58,52 @@ const ProjectSummaryMap = ({ projectExtentGeoJSON, setIsEditing }) => {
 
   /**
    * Updates viewport on zoom, scroll, and other events
-   * @param {Object} viewport - Mapbox object that stores properties of the map view
+   * @param {Object} updatedViewPort - Mapbox object that stores properties of the map view
    */
-  const handleViewportChange = viewport => setViewport(viewport);
+  const handleViewportChange = updatedViewPort => setViewport(updatedViewPort);
 
+  /**
+   * Let's throw an error intentionally if there are no features for a project.
+   */
+  if(featureCount < 1) {
+    throw Error("Map error: Cannot render or edit maps with no features");
+  }
+
+  /**
+   * If we do have features, proceed to render map.
+   */
   return (
     <Box>
       <ReactMapGL
+        /* Current state of viewport */
         {...viewport}
+        /* Object reference to this object */
         ref={mapRef}
         width="100%"
         height="60vh"
-        interactiveLayerIds={getSummaryMapInteractiveIds(projectExtentGeoJSON)}
-        onHover={handleLayerHover}
+        /* Access Key */
         mapboxApiAccessToken={MAPBOX_TOKEN}
+        /* Get the IDs from the layerConfigs object to set as interactive in the summary map */
+        /* If specified: Pointer event callbacks will only query the features under the pointer of these layers.
+              The getCursor callback will receive isHovering: true when hover over features of these layers */
+        interactiveLayerIds={getSummaryMapInteractiveIds(projectExtentGeoJSON)}
+        /* Gets and sets data from a map feature used to populate and place a tooltip */
+        onHover={handleLayerHover}
+        /* Updates state of viewport on zoom, scroll, and other events */
         onViewportChange={handleViewportChange}
       >
+        {/* Draw Navigation controls with specific styles */}
         <div className={classes.navStyle}>
           <NavigationControl showCompass={false} />
         </div>
+        {/*
+          If there is GeoJSON data, create sources and layers for
+          each source layer in the project's GeoJSON FeatureCollection
+        */}
         {projectExtentGeoJSON && createSummaryMapLayers(projectExtentGeoJSON)}
+        {/* Draw tooltip on feature hover */}
         {renderTooltip(featureText, hoveredCoords, classes.toolTip)}
+        {/* Draw edit button controls with specific styles */}
         <Button
           variant="contained"
           color="primary"

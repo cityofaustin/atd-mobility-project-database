@@ -57,7 +57,7 @@ class TestApp:
         """
         mocker.patch.object(app, 'process_event', autospec=True)
         mock_event = create_sqs_event(self.event_update)
-        app.handler(mock_event, {})
+        app.handler(mock_event, {"function_name": "test", "aws_request_id": "test"})
         app.process_event.assert_called_once_with(mock_event["Records"][0]["body"])
 
     def test_event_handler_validate_hasura_event(self, mocker: MockerFixture) -> None:

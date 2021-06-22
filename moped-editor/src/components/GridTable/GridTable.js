@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { NavLink as RouterLink } from "react-router-dom";
+import { NavLink as RouterLink, useLocation } from "react-router-dom";
 
 /**
  * Material UI
@@ -40,7 +40,7 @@ const useStyles = makeStyles(theme => ({
   },
   paper: {
     width: "100%",
-    marginBottom: theme.spacing(2),
+    marginBottom: theme.spacing(1),
   },
   title: {
     position: "relative",
@@ -126,13 +126,32 @@ const GridTable = ({ title, query }) => {
     column: "",
   });
 
+  // create URLSearchParams from url
+  const filterQuery = new URLSearchParams(useLocation().search);
+
+  /**
+   * if filter exists in url, decodes base64 string and returns as object
+   * Used to initialize filter state
+   * @return Object if valid JSON otherwise false
+   */
+  const getFilterQuery = () => {
+    if (Array.from(filterQuery).length > 0) {
+      try {
+        return JSON.parse(atob(filterQuery.get("filter")));
+      } catch {
+        return false;
+      }
+    }
+    return false;
+  };
+
   /**
    * Stores objects storing a random id, column, operator, and value.
    * @type {Object} filters
    * @function setFilter - Sets the state of filters
-   * @default {{}}
+   * @default {if filter in url, use those params, otherwise {}}
    */
-  const [filters, setFilter] = useState({});
+  const [filters, setFilter] = useState(getFilterQuery() || {});
 
   /**
    * Query Management
@@ -159,18 +178,19 @@ const GridTable = ({ title, query }) => {
     // Retrieve the type of field (string, float, int, etc)
     const type = query.config.columns[column].type.toLowerCase();
     // Get the invalidValueDefault in the search config object
-    const invalidValueDefault = query.config.columns[column].search?.invalidValueDefault ?? null;
+    const invalidValueDefault =
+      query.config.columns[column].search?.invalidValueDefault ?? null;
     // If the type is number of float, attempt to parse as such
-    if(["number", "float", "double"].includes(type)) {
+    if (["number", "float", "double"].includes(type)) {
       value = Number.parseFloat(value) || invalidValueDefault;
     }
     // If integer, attempt to parse as integer
-    if(["int", "integer"].includes(type)) {
-      value = Number.parseInt(value)  || invalidValueDefault;
+    if (["int", "integer"].includes(type)) {
+      value = Number.parseInt(value) || invalidValueDefault;
     }
     // Any other value types are pass-through for now
     return value;
-  }
+  };
 
   // If we have a search, use the terms...
   if (search.value && search.value !== "") {
@@ -195,24 +215,31 @@ const GridTable = ({ title, query }) => {
 
   // For each filter added to state, add a where clause in GraphQL
   Object.keys(filters).forEach(filter => {
-    let { envelope, field, gqlOperator, value, type } = filters[filter];
+    let {
+      envelope,
+      field,
+      gqlOperator,
+      value,
+      type,
+      specialNullValue,
+    } = filters[filter];
 
     // If we have no operator, then there is nothing we can do.
     if (field === null || gqlOperator === null) {
       return;
     }
 
-    // If the operator includes "is_null", then the value is always true
+    // If the operator includes "is_null", we check for empty strings
     if (gqlOperator.includes("is_null")) {
-      value = "true";
+      gqlOperator = envelope === "true" ? "_eq" : "_neq";
+      value = specialNullValue ? specialNullValue : '""';
     } else {
-      // We have a normal operator, if we have a normal value
       if (value !== null) {
-        // There is a value, if there is an envelope, put inside envelope.
+        // If there is an envelope, insert value in envelope.
         value = envelope ? envelope.replace("{VALUE}", value) : value;
 
         // If it is a number or boolean, it does not need quotation marks
-        // do not envelope in quotation marks.
+        // Otherwise, add quotation marks for the query to identify as string
         value = type in ["number", "boolean"] ? value : `"${value}"`;
       } else {
         // We don't have a value
@@ -311,7 +338,7 @@ const GridTable = ({ title, query }) => {
 
     // Bypass value extraction if column value should be "stringified"
     if (query.config.columns[exp]?.stringify) {
-      return JSON.stringify(section)
+      return JSON.stringify(section);
     }
 
     // If not an array, resolve its value
@@ -360,13 +387,12 @@ const GridTable = ({ title, query }) => {
    * @param {Object} column - column with link attribute
    * @return {string}
    */
-  const buildLinkData = (row, column) => (
+  const buildLinkData = (row, column) =>
     JSON.stringify({
       singleItem: query.singleItem,
       data: row[column],
-      link: row[query.config.columns[column].link]
-    })
-  );
+      link: row[query.config.columns[column].link],
+    });
 
   /**
    * Data Management
@@ -401,6 +427,7 @@ const GridTable = ({ title, query }) => {
               filterParameters: filters,
               setFilterParameters: setFilter,
             }}
+            filterQuery={filterQuery}
           />
         </GridTableToolbar>
         {/*Main Table Body*/}
@@ -427,6 +454,7 @@ const GridTable = ({ title, query }) => {
                                 // If column is hidden, don't render <td>
                                 !query.isHidden(column) && (
                                   <TableCell
+                                    size="small"
                                     key={columnIndex}
                                     width={
                                       query.config.columns[
@@ -435,7 +463,13 @@ const GridTable = ({ title, query }) => {
                                         ? query.config.columns[column].width
                                         : 0
                                     }
-                                    className={classes.tableCell}
+                                    className={
+                                      query.config.columns[
+                                        column
+                                      ].hasOwnProperty("className")
+                                        ? query.config.columns[column].className
+                                        : classes.tableCell
+                                    }
                                   >
                                     {query.isPK(column) ? (
                                       // If there is custom JSX for the PK single item button, render it
@@ -468,9 +502,9 @@ const GridTable = ({ title, query }) => {
                                     ) : query.config.columns[column]?.link ? (
                                       query.getFormattedValue(
                                         column,
-                                        buildLinkData(row, column))
-                                    )
-                                    : isAlphanumeric(column) ? (
+                                        buildLinkData(row, column)
+                                      )
+                                    ) : isAlphanumeric(column) ? (
                                       <>
                                         {query.config.columns[
                                           column

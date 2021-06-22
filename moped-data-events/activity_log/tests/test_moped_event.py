@@ -151,7 +151,6 @@ class TestMopedEvent:
         assert "recordData" in variables
         assert "description" in variables
         assert "updatedBy" in variables
-        assert "updatedById" in variables
 
         assert variables.get("recordId", 0) == 1
         assert variables.get("recordType", "") == "moped_project"
@@ -164,7 +163,6 @@ class TestMopedEvent:
         assert len(variables.get("description")) == 2
 
         assert variables.get("updatedBy", "") == "7eee07c6-5f50-11eb-8ea9-371fc07428f6"
-        assert variables.get("updatedById", -1) == 0
 
     def test_get_variables_fail(self) -> None:
         moped_event = MopedEvent(payload=None, load_primary_keys=True)

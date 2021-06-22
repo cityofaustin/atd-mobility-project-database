@@ -1,14 +1,31 @@
 #!/usr/bin/env bash
 
+#
+# Determine working stage based on branch name
+#
 case "${BRANCH_NAME}" in
-"production")
-  export WORKING_STAGE="production"
+  "production")
+    export WORKING_STAGE="production";
   ;;
-*)
-  export WORKING_STAGE="staging"
+  "staging")
+    export WORKING_STAGE="staging";
+  ;;
+  *)
+    export WORKING_STAGE="moped_test";
   ;;
 esac
 
+#
+# Override the working stage if this is a moped-test build.
+#
+if [[ "${MOPED_TEST_STAGE}" = "TRUE" ]]; then
+  export WORKING_STAGE="test";
+  export BUILD_TYPE="moped_test";
+else
+  export BUILD_TYPE="git push";
+fi;
+
+echo "BUILD_TYPE: ${BUILD_TYPE}";
 echo "SOURCE -> BRANCH_NAME: ${BRANCH_NAME}";
 echo "SOURCE -> WORKING_STAGE: ${WORKING_STAGE}";
 echo "PR_NUMBER: '${PR_NUMBER}'";

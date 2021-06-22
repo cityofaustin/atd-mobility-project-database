@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 
 import {
@@ -119,19 +119,18 @@ const GridTableSearchBar = ({ query, searchState }) => {
   );
 
   const handleSearchValueChange = value => {
-    if(value === "" && searchFieldValue !== "") {
+    if (value === "" && searchFieldValue !== "") {
       handleClearSearchResults();
     } else {
       setSearchFieldValue(value);
     }
- }
+  };
 
   /**
    * Handles the submission of our search form
    * @param {Object} e - The event object
    */
   const handleSearchSubmission = event => {
-
     // Stop if we don't have any value entered in the search field
     if (searchFieldValue.length === 0) {
       setDialogSettings({

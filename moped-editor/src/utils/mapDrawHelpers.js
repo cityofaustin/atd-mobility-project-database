@@ -2,6 +2,7 @@ import React, { useState, useRef, useCallback } from "react";
 import MapDrawToolbar from "../views/projects/newProjectView/MapDrawToolbar";
 import { Editor } from "react-map-gl-draw";
 import {
+  DrawLineStringMode,
   DrawPointMode,
   EditingMode,
   RENDER_STATE,
@@ -10,7 +11,7 @@ import {
 import { v4 as uuidv4 } from "uuid";
 import { get } from "lodash";
 import theme from "../theme/index";
-import { mapStyles, drawnLayerName } from "../utils/mapHelpers";
+import { mapStyles, drawnLayerNames } from "../utils/mapHelpers";
 import { UPSERT_PROJECT_EXTENT } from "../queries/project";
 import { useMutation } from "@apollo/client";
 
@@ -20,6 +21,12 @@ export const MODES = [
     text: "Draw Point",
     handler: DrawPointMode,
     icon: "icon-point.svg",
+  },
+  {
+    id: "drawLine",
+    text: "Draw Line",
+    handler: DrawLineStringMode,
+    icon: "icon-line-draw.svg",
   },
   {
     id: "edit",
@@ -154,7 +161,9 @@ export function getFeatureStyle({ feature, state, currentZoom }) {
     case SHAPE.POINT:
       style.r = CIRCLE_RADIUS;
       break;
-
+    case SHAPE.LINE_STRING:
+      style.fillOpacity = 0;
+      break;
     default:
   }
 
@@ -167,8 +176,8 @@ export function getFeatureStyle({ feature, state, currentZoom }) {
  * @return {array} List of features that originated from the draw UI
  */
 const getDrawnFeaturesFromFeatureCollection = featureCollection =>
-  featureCollection.features.filter(
-    feature => feature.properties.sourceLayer === drawnLayerName
+  featureCollection.features.filter(feature =>
+    drawnLayerNames.includes(feature.properties.sourceLayer)
   );
 
 /**
@@ -258,7 +267,7 @@ export function useMapDrawTools(
 
     // Track existing drawn features so that we don't duplicate them on each save
     const newDrawnFeatures = drawnFeatures.filter(
-      feature => feature.properties.sourceLayer !== drawnLayerName
+      feature => !drawnLayerNames.includes(feature?.properties?.sourceLayer)
     );
 
     // Add a UUID and layer name to the new features for retrieval and styling
@@ -270,9 +279,12 @@ export function useMapDrawTools(
         id: featureUUID,
         properties: {
           ...feature.properties,
-          renderType: "Point",
+          renderType: feature.geometry.type,
           PROJECT_EXTENT_ID: featureUUID,
-          sourceLayer: drawnLayerName,
+          sourceLayer:
+            feature.geometry.type === "LineString"
+              ? "drawnByUserLine"
+              : "drawnByUser",
         },
       };
     });

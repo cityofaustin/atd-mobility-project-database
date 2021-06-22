@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import PropTypes from "prop-types";
 
 import {
@@ -59,13 +60,14 @@ const useStyles = makeStyles(theme => ({
  * @return {JSX.Element}
  * @constructor
  */
-const GridTableFilters = ({ query, filterState }) => {
+const GridTableFilters = ({ query, filterState, filterQuery, history }) => {
   /**
    * The styling of the search bar
    * @constant
    * @default
    */
   const classes = useStyles();
+  const queryPath = useLocation().pathname;
 
   /**
    * The current local filter parameters
@@ -78,7 +80,7 @@ const GridTableFilters = ({ query, filterState }) => {
   );
 
   /**
-   * Confirm dialog state. .
+   * Confirm dialog state.
    * @type {boolean} confirmDialogOpen - True to show, False to hide
    * @function setConfirmDialogOpen - Update the state of confirmDialogOpen
    * @default false
@@ -96,13 +98,6 @@ const GridTableFilters = ({ query, filterState }) => {
     message: null,
     actions: null,
   });
-
-  /**
-   * This is a timer allocation that will update the state after the user is finished typing.
-   * @type {integer} - The returned timeoutID is a positive integer value which identifies the timer created by the call to setTimeout()
-   * @default null
-   */
-  let typingTimer = null;
 
   /**
    * The default structure of an empty field
@@ -128,6 +123,7 @@ const GridTableFilters = ({ query, filterState }) => {
     placeholder: null,
     value: null,
     type: null,
+    specialNullValue: null,
   };
 
   /**
@@ -264,6 +260,9 @@ const GridTableFilters = ({ query, filterState }) => {
         // Copy the envelope if available
         filtersNewState[filterId].envelope =
           query.config.filters.operators[operator].envelope;
+        // Copy special null value if available
+        filtersNewState[filterId].specialNullValue =
+          query.config.filters.operators[operator].specialNullValue;
       } else {
         // Reset operator values
         filtersNewState[filterId].operator = null;
@@ -310,6 +309,8 @@ const GridTableFilters = ({ query, filterState }) => {
       delete filtersNewState[filterId];
     } finally {
       // Finally, reset the state
+      filterQuery.set("filter", btoa(JSON.stringify(filtersNewState)));
+      history.push(`${queryPath}?filter=${filterQuery.get("filter")}`);
       setFilterParameters(filtersNewState);
     }
   };
@@ -324,13 +325,8 @@ const GridTableFilters = ({ query, filterState }) => {
     const filtersNewState = { ...filterParameters };
     // Patch the new state
     filtersNewState[filterId].value = value;
-    // Clear the current timer
-    clearTimeout(typingTimer);
-    // Start a new timer with a 1/3rd of a second delay.
-    typingTimer = setTimeout(() => {
-      // Update the state
-      setFilterParameters(filtersNewState);
-    }, 333);
+    // Update the state
+    setFilterParameters(filtersNewState);
   };
 
   /**
@@ -386,6 +382,8 @@ const GridTableFilters = ({ query, filterState }) => {
    * Applies the current local state and updates the parent's
    */
   const handleApplyButtonClick = () => {
+    filterQuery.set("filter", btoa(JSON.stringify(filterParameters)));
+    history.push(`${queryPath}?filter=${filterQuery.get("filter")}`);
     filterState.setFilterParameters(filterParameters);
   };
 
@@ -531,6 +529,7 @@ const GridTableFilters = ({ query, filterState }) => {
                         handleSearchValueChange(filterId, e.target.value)
                       }
                       variant="outlined"
+                      value={filterParameters[filterId].value}
                     />
                   )}
                 </FormControl>

@@ -9,7 +9,7 @@ import {
   createProjectSelectLayerConfig,
   createProjectViewLayerConfig,
   createSelectedIdsObjectFromFeatureCollection,
-  drawnLayerName,
+  drawnLayerNames,
   getClickEditableLayerNames,
   getGeoJSON,
   getEditMapInteractiveIds,
@@ -110,7 +110,7 @@ const NewProjectMap = ({
     const layerName = getLayerSource(e);
 
     // If a user clicks a drawn point in the map, open draw UI
-    if (layerName === drawnLayerName) {
+    if (drawnLayerNames.includes(layerName)) {
       setIsDrawing(true);
     }
 

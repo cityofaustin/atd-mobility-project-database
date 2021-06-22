@@ -48,7 +48,7 @@ export const StaffListViewQueryConf = {
     first_name: {
       searchable: true,
       sortable: true,
-      label: "First Name",
+      label: "First name",
       search: {
         label: "Search by First Name",
         operator: "_ilike",
@@ -60,7 +60,7 @@ export const StaffListViewQueryConf = {
     last_name: {
       searchable: true,
       sortable: true,
-      label: "Last Name",
+      label: "Last name",
       search: {
         label: "Search by Last Name",
         operator: "_ilike",
@@ -72,6 +72,7 @@ export const StaffListViewQueryConf = {
     email: {
       searchable: true,
       sortable: false,
+      className: null,
       label: "E-Mail",
       search: {
         label: "Search by E-mail",
@@ -84,7 +85,7 @@ export const StaffListViewQueryConf = {
     date_added: {
       searchable: false,
       sortable: true,
-      label: "Date Added",
+      label: "Date added",
       width: "10%",
       filter: value => new Date(value).toLocaleDateString('en-US', {timeZone: 'UTC'}),
       type: "date_iso",
@@ -116,7 +117,7 @@ export const StaffListViewQueryConf = {
     cognito_user_id: {
       searchable: false,
       sortable: false,
-      label: "Cognito User ID",
+      label: "Cognito user ID",
       search: {
         label: "Search by Cognito User ID",
         operator: "_eq",
@@ -128,19 +129,15 @@ export const StaffListViewQueryConf = {
     is_coa_staff: {
       searchable: false,
       sortable: true,
-      label: "COA Staff",
+      label: "COA staff",
       filter: value => (value === true ? "True" : "False"),
       type: "Boolean",
     },
-    status_id: {
-      searchable: false,
-      sortable: false,
-      label: "Status ID",
-      type: "Int",
-    },
   },
   order_by: {},
-  where: {},
+  where: {
+    status_id: "_eq: 1"
+  },
   limit: 25,
   offset: 0,
 };

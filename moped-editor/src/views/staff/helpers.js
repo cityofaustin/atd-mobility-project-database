@@ -37,11 +37,18 @@ export function useUserApi() {
         !!callback && callback();
       })
       .catch(err => {
-        setError(err.response.data.error);
+        const otherError = err?.response?.data?.message
+          ? {
+              error: {
+                other: [err?.response?.data?.message],
+              },
+            }
+          : null;
+        setError(err?.response?.data?.error ?? otherError);
       });
   };
 
-  return { result, error, loading, requestApi };
+  return { result, error, setError, loading, setLoading, requestApi };
 }
 
 const errorsToTranslate = {

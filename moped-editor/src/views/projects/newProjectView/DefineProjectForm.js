@@ -10,24 +10,24 @@ import {
 } from "@material-ui/core";
 import { useQuery, gql } from "@apollo/client";
 
-const DefineProjectForm = ({ projectDetails, setProjectDetails, nameError, descriptionError }) => {
+const DefineProjectForm = ({
+  projectDetails,
+  setProjectDetails,
+  nameError,
+  descriptionError,
+}) => {
   const handleFieldChange = (value, name) => {
     const updatedProjectDetails = { ...projectDetails, [name]: value };
 
     setProjectDetails(updatedProjectDetails);
   };
 
-  const PHASES_QUERY = gql`
-    query Phases {
-      moped_phases(order_by: {phase_order: asc}, where: {phase_id: {_gt: 0}}) {
-        phase_name
-      }
-    }
-  `;
-
   const STATUS_QUERY = gql`
     query Status {
-      moped_status(order_by: { status_order: asc }, where: {status_id: {_gt: 0}}) {
+      moped_status(
+        order_by: { status_order: asc }
+        where: { status_id: { _gt: 0 } }
+      ) {
         status_name
       }
     }
@@ -41,10 +41,6 @@ const DefineProjectForm = ({ projectDetails, setProjectDetails, nameError, descr
     }
   `;
 
-  const { loading: phaseLoading, error: phaseError, data: phases } = useQuery(
-    PHASES_QUERY
-  );
-
   const {
     loading: statusLoading,
     error: statusError,
@@ -56,9 +52,6 @@ const DefineProjectForm = ({ projectDetails, setProjectDetails, nameError, descr
   );
 
   const capitalize = string => string.charAt(0).toUpperCase() + string.slice(1);
-
-  if (phaseLoading) return <CircularProgress />;
-  if (phaseError) return `Error! ${phaseError.message}`;
 
   if (statusLoading) return <CircularProgress />;
   if (statusError) return `Error! ${statusError.message}`;
@@ -72,7 +65,7 @@ const DefineProjectForm = ({ projectDetails, setProjectDetails, nameError, descr
         <Grid item xs={6}>
           <TextField
             required
-            label="Name"
+            label="Project name"
             name="project_name"
             variant="standard"
             type="text"
@@ -150,23 +143,6 @@ const DefineProjectForm = ({ projectDetails, setProjectDetails, nameError, descr
             {statuses.moped_status.map(status => (
               <MenuItem key={status.status_name} value={status.status_name}>
                 {capitalize(status.status_name)}
-              </MenuItem>
-            ))}
-          </Select>
-        </Grid>
-
-        <Grid item xs={3}>
-          <InputLabel>Current phase</InputLabel>
-
-          <Select
-            name="current_phase"
-            style={{ width: 150, paddingLeft: 10 }}
-            value={projectDetails.current_phase}
-            onChange={e => handleFieldChange(e.target.value, e.target.name)}
-          >
-            {phases.moped_phases.map(phase => (
-              <MenuItem key={phase.phase_name} value={phase.phase_name}>
-                {capitalize(phase.phase_name)}
               </MenuItem>
             ))}
           </Select>

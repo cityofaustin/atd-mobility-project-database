@@ -37,10 +37,12 @@ jobs:
           MOPED_PRBODY: ${{ github.event.pull_request.body }}
         run: |
           export BRANCH_NAME=${GITHUB_REF##*/}
+          echo "Moped Test Build @ ${BRANCH_NAME}: ${{ github.event.inputs.description }}"
           echo "SHA: ${GITHUB_SHA}"
           echo "ACTION/BRANCH_NAME: ${BRANCH_NAME}"
           echo "MOPED_PRNUM: ${MOPED_PRNUM}"
           echo "PWD: $(pwd)"
+
           source $(pwd)/.github/workflows/aws-heroku-helper.sh
           echo "Commented out editor build"
           build_editor
@@ -77,6 +79,7 @@ jobs:
           MOPED_PRBODY: ${{ github.event.pull_request.body }}
         run: |
           export BRANCH_NAME=${GITHUB_REF##*/}
+          echo "Moped Test Build @ ${BRANCH_NAME}: ${{ github.event.inputs.description }}"
           echo "SHA: ${GITHUB_SHA}"
           echo "ACTION/BRANCH_NAME: ${BRANCH_NAME}"
           echo "MOPED_PRNUM: ${MOPED_PRNUM}"
@@ -86,3 +89,68 @@ jobs:
           clone_hasura_repo
           build_database
           run_database_migration
+  build_activity_log_sqs:
+    name: Build Activity Log SQS
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-python@v2
+        with:
+          python-version: "3.8"
+          architecture: "x64"
+      # Get the code first
+      - name: "Checkout"
+        uses: actions/checkout@v2
+      # Then install the AWC CLI tools & boto3
+      - name: "Install CLI Requirements: AWS Cli"
+        run: |
+          sudo apt-get install python3-setuptools
+          pip3 install awscli boto3
+      # Run the shell commands using the AWS environment variables
+      - name: "Moped Database: Re-deploy"
+        env:
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          ATD_MOPED_EVENTS_ROLE: ${{ secrets.ATD_MOPED_EVENTS_ROLE }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          MOPED_TEST_STAGE: "TRUE"
+        run: |
+          export BRANCH_NAME=${GITHUB_REF##*/}
+          echo "Moped Test Build @ ${BRANCH_NAME}: ${{ github.event.inputs.description }}"
+          echo "SHA: ${GITHUB_SHA}"
+          echo "ACTION/BRANCH_NAME: ${BRANCH_NAME}"
+          echo "MOPED_PRNUM: ${MOPED_PRNUM}"
+          echo "PWD: $(pwd)"
+          source $(pwd)/.github/workflows/aws-moped-sqs-helper.sh
+          deploy_event_function "activity_log"
+  build_moped_test_api:
+    name: Build Moped Test API
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/setup-python@v2
+        with:
+          python-version: "3.8"
+          architecture: "x64"
+      # Get the code first
+      - name: "Checkout"
+        uses: actions/checkout@v2
+      # Then install the AWC CLI tools & boto3
+      - name: "Install AWS Cli"
+        run: |
+          sudo apt-get install python3-setuptools
+          pip3 install awscli boto3 zappa virtualenv
+      # Run the shell commands using the AWS environment variables
+      - name: "Build"
+        env:
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_MOPED_API_ZAPPA_CONFIGURAITON_FILE: ${{ secrets.AWS_MOPED_API_ZAPPA_CONFIGURAITON_FILE }}
+        run: |
+          export BRANCH_NAME=${GITHUB_REF##*/}
+          echo "SHA: ${GITHUB_SHA}"
+          echo "ACTION/BRANCH_NAME: ${BRANCH_NAME}"
+          echo "GR: ${GITHUB_REF}"
+          echo "PWD: $(pwd)"
+          source $(pwd)/.github/workflows/aws-moped-api-helper.sh
+          deploy_moped_api

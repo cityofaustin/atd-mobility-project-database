@@ -18,9 +18,6 @@ const useStyles = makeStyles(theme => ({
     flex: "1 1 auto",
     overflow: "hidden",
     paddingTop: 64,
-    [theme.breakpoints.up("lg")]: {
-      paddingLeft: 256,
-    },
   },
   contentContainer: {
     display: "flex",
@@ -36,17 +33,17 @@ const useStyles = makeStyles(theme => ({
 
 const DashboardLayout = () => {
   const classes = useStyles();
-  const [isMobileNavOpen, setMobileNavOpen] = useState(false);
+  const [isOpen, setOpen] = useState(false);
   const { user } = useUser();
 
   console.log("user", user);
 
   return user ? (
     <div className={classes.root}>
-      <TopBar onMobileNavOpen={() => setMobileNavOpen(true)} />
+      <TopBar onOpen={() => setOpen(true)} />
       <NavBar
-        onMobileClose={() => setMobileNavOpen(false)}
-        openMobile={isMobileNavOpen}
+        onClose={() => setOpen(false)}
+        isOpen={isOpen}
       />
       <div className={classes.wrapper}>
         <div className={classes.contentContainer}>

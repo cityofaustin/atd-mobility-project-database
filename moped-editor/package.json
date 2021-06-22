@@ -2,7 +2,7 @@
   "name": "atd-moped-editor",
   "author": "ATD Data & Technology Services",
   "licence": "CC0 1.0 Universal",
-  "version": "0.4.0",
+  "version": "0.6.0",
   "homepage": "/moped",
   "private": false,
   "scripts": {
@@ -44,7 +44,7 @@
     "@material-ui/styles": "^4.10.0",
     "@turf/bbox": "^6.3.0",
     "apollo-boost": "^0.4.9",
-    "atd-kickstand": "github:cityofaustin/atd-kickstand#9e025b9ff0a73aa470cec7c4575c646e84120ddd",
+    "atd-kickstand": "github:cityofaustin/atd-kickstand#f71e4d3d6ddea09263410d93432c254ef2ed1793",
     "aws-amplify": "^3.3.4",
     "axios": "^0.21.1",
     "chart.js": "^2.9.3",

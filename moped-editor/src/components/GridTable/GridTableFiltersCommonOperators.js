@@ -33,6 +33,22 @@ export const GridTableFiltersCommonOperators = {
     envelope: "false",
     type: "string",
   },
+  string_is_null_special_case: {
+    operator: "_is_null",
+    label: "is blank",
+    description: "Selected field does not have meaningful content",
+    envelope: "true",
+    specialNullValue: '" :"',
+    type: "string",
+  },
+  string_is_not_null_special_case: {
+    operator: "_is_null",
+    label: "is not blank",
+    description: "String field does not match special null value",
+    envelope: "false",
+    specialNullValue: '" :"',
+    type: "string",
+  },
   string_begins_with_case_insensitive: {
     operator: "_ilike",
     label: "begins with",

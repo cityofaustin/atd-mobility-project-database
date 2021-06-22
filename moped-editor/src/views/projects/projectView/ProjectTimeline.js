@@ -21,6 +21,9 @@ import {
   UPDATE_PROJECT_PHASES_MUTATION,
   DELETE_PROJECT_PHASE,
   ADD_PROJECT_PHASE,
+  UPDATE_PROJECT_MILESTONES_MUTATION,
+  DELETE_PROJECT_MILESTONE,
+  ADD_PROJECT_MILESTONE
 } from "../../../queries/project";
 import { useQuery, useMutation } from "@apollo/client";
 import { useParams } from "react-router-dom";
@@ -42,7 +45,8 @@ const ProjectTimeline = ({ refetch: refetchSummary }) => {
    * imperatively.
    * @type {object} addActionRef
    * */
-  const addActionRef = React.useRef();
+  const addActionRefPhases = React.useRef();
+  const addActionRefMilestones = React.useRef();
 
   /**
    * Queries Hook
@@ -60,6 +64,11 @@ const ProjectTimeline = ({ refetch: refetchSummary }) => {
   const [updateProjectPhase] = useMutation(UPDATE_PROJECT_PHASES_MUTATION);
   const [deleteProjectPhase] = useMutation(DELETE_PROJECT_PHASE);
   const [addProjectPhase] = useMutation(ADD_PROJECT_PHASE);
+  const [updateProjectMilestone] = useMutation(
+    UPDATE_PROJECT_MILESTONES_MUTATION
+  );
+  const [deleteProjectMilestone] = useMutation(DELETE_PROJECT_MILESTONE);
+  const [addProjectMilestone] = useMutation(ADD_PROJECT_MILESTONE);
 
   // If the query is loading or data object is undefined,
   // stop here and just render the spinner.
@@ -79,29 +88,20 @@ const ProjectTimeline = ({ refetch: refetchSummary }) => {
     {}
   );
 
-  const updateExistingPhases = phaseObject => {
-    // If new or updated phase has a current phase of true,
-    // set current phase of any other true phases to false
-    // to ensure there is only one active phase
-    if (phaseObject.is_current_phase) {
-      data.moped_proj_phases.forEach(phase => {
-        if (
-          phase.is_current_phase &&
-          phase.project_phase_id !== phaseObject.project_phase_id
-        ) {
-          phase.is_current_phase = false;
-          // Execute update mutation, returns promise
-          return updateProjectPhase({
-            variables: phase,
-          }).then(() => {
-            // Refetch data
-            refetch();
-            refetchSummary();
-          });
-        }
-      });
-    }
-  };
+  /**
+   * Milestone table lookup object formatted into the shape that <MaterialTable>
+   * expects.
+   * Ex: { construction: "Construction", hold: "Hold", ...}
+   */
+  const milestoneNameLookup = data.moped_milestones.reduce(
+    (obj, item) =>
+      Object.assign(obj, {
+        [item.milestone_name.toLowerCase()]:
+          item.milestone_name.charAt(0).toUpperCase() +
+          item.milestone_name.slice(1),
+      }),
+    {}
+  );
 
   /**
    * Phase table lookup object formatted into the shape that <MaterialTable>
@@ -135,6 +135,33 @@ const ProjectTimeline = ({ refetch: refetchSummary }) => {
           }),
         {}
       );
+
+  /**
+   * If new or updated phase has a current phase of true,
+   * set current phase of any other true phases to false
+   * to ensure there is only one active phase
+   */
+
+  const updateExistingPhases = phaseObject => {
+    if (phaseObject.is_current_phase) {
+      data.moped_proj_phases.forEach(phase => {
+        if (
+          phase.is_current_phase &&
+          phase.project_phase_id !== phaseObject.project_phase_id
+        ) {
+          phase.is_current_phase = false;
+          // Execute update mutation, returns promise
+          return updateProjectPhase({
+            variables: phase,
+          }).then(() => {
+            // Refetch data
+            refetch();
+            refetchSummary();
+          });
+        }
+      });
+    }
+  };
 
   /**
    * Prevents the line from being saved on enter key
@@ -254,9 +281,9 @@ const ProjectTimeline = ({ refetch: refetchSummary }) => {
   };
 
   /**
-   * Column configuration for <MaterialTable>
+   * Column configuration for <MaterialTable> Phases table
    */
-  const columns = [
+  const phasesColumns = [
     {
       title: "Phase Name",
       field: "phase_name",
@@ -305,6 +332,51 @@ const ProjectTimeline = ({ refetch: refetchSummary }) => {
     },
   ];
 
+  /**
+   * Column configuration for <MaterialTable> Milestones table
+   */
+  const milestoneColumns = [
+    {
+      title: "Milestone",
+      field: "milestone_name",
+      lookup: milestoneNameLookup,
+    },
+    {
+      title: "Description",
+      field: "milestone_description",
+    },
+    {
+      title: "Completion estimate",
+      field: "milestone_estimate",
+      editComponent: props => (
+        <DateFieldEditComponent
+          {...props}
+          name="milestone_estimate"
+          label="Completion estimate"
+        />
+      ),
+    },
+    {
+      title: "Date completed",
+      field: "milestone_end",
+      editComponent: props => (
+        <DateFieldEditComponent
+          {...props}
+          name="milestone_end"
+          label="Date completed"
+        />
+      ),
+    },
+    {
+      title: "Complete",
+      field: "completed",
+      lookup: { true: "Yes", false: "No" },
+      editComponent: props => (
+        <ToggleEditComponent {...props} name="completed" />
+      ),
+    },
+  ];
+
   return (
     <ApolloErrorHandler error={error}>
       <CardContent>
@@ -312,7 +384,7 @@ const ProjectTimeline = ({ refetch: refetchSummary }) => {
           <Grid item xs={12}>
             <div style={{ maxWidth: "100%" }}>
               <MaterialTable
-                columns={columns}
+                columns={phasesColumns}
                 data={data.moped_proj_phases}
                 title="Project Phases"
                 // Action component customized as described in this gh-issue:
@@ -328,7 +400,7 @@ const ProjectTimeline = ({ refetch: refetchSummary }) => {
                     } else {
                       return (
                         <div
-                          ref={addActionRef}
+                          ref={addActionRefPhases}
                           onClick={props.action.onClick}
                         />
                       );
@@ -433,9 +505,122 @@ const ProjectTimeline = ({ refetch: refetchSummary }) => {
                 color="primary"
                 size="large"
                 startIcon={<AddBoxIcon />}
-                onClick={() => addActionRef.current.click()}
+                onClick={() => addActionRefPhases.current.click()}
               >
                 Add phase
+              </Button>
+            </Box>
+          </Grid>
+          <Grid item xs={12}>
+            <div style={{ maxWidth: "100%" }}>
+              <MaterialTable
+                columns={milestoneColumns}
+                data={data.moped_proj_milestones}
+                title="Project Milestones"
+                components={{
+                  Action: props => {
+                    // If isn't the add action
+                    if (
+                      typeof props.action === typeof Function ||
+                      props.action.tooltip !== "Add"
+                    ) {
+                      return <MTableAction {...props} />;
+                    } else {
+                      return (
+                        <div
+                          ref={addActionRefMilestones}
+                          onClick={props.action.onClick}
+                        />
+                      );
+                    }
+                  },
+                }}
+                editable={{
+                  onRowAdd: newData => {
+                    // Merge input fields with required fields default data.
+                    const newMilestoneObject = Object.assign(
+                      {
+                        project_id: projectId,
+                        status_id: 1,
+                      },
+                      newData
+                    );
+
+                    // Execute insert mutation
+                    return addProjectMilestone({
+                      variables: {
+                        objects: [newMilestoneObject],
+                      },
+                    }).then(() => {
+                      // Refetch data
+                      refetch();
+                    });
+                  },
+                  onRowUpdate: (newData, oldData) => {
+                    const updatedMilestoneObject = {
+                      ...oldData,
+                    };
+
+                    // Array of differences between new and old data
+                    let differences = Object.keys(oldData).filter(
+                      key => oldData[key] !== newData[key]
+                    );
+
+                    // Loop through the differences and assign newData values.
+                    // If one of the Date fields is blanked out, coerce empty
+                    // string to null.
+                    differences.forEach(diff => {
+                      let shouldCoerceEmptyStringToNull =
+                        newData[diff] === "" &&
+                        (diff === "phase_start" || diff === "phase_end");
+
+                      if (shouldCoerceEmptyStringToNull) {
+                        updatedMilestoneObject[diff] = null;
+                      } else {
+                        updatedMilestoneObject[diff] = newData[diff];
+                      }
+                    });
+
+                    // Remove extraneous fields given by MaterialTable that
+                    // Hasura doesn't need
+                    delete updatedMilestoneObject.tableData;
+                    delete updatedMilestoneObject.project_id;
+                    delete updatedMilestoneObject.__typename;
+
+                    // Execute update mutation
+                    return updateProjectMilestone({
+                      variables: updatedMilestoneObject,
+                    }).then(() => {
+                      // Refetch data
+                      refetch();
+                    });
+                  },
+                  onRowDelete: oldData => {
+                    // Execute delete mutation
+                    return deleteProjectMilestone({
+                      variables: {
+                        project_milestone_id: oldData.project_milestone_id,
+                      },
+                    }).then(() => {
+                      // Refetch data
+                      refetch();
+                    });
+                  },
+                }}
+                options={{
+                  actionsColumnIndex: -1,
+                }}
+              />
+            </div>
+            <Box pt={2}>
+              <Button
+                variant="contained"
+                color="primary"
+                size="large"
+                startIcon={<AddBoxIcon />}
+                onClick={() => addActionRefMilestones.current.click()}
+              >
+                Add milestone
               </Button>
             </Box>
           </Grid>

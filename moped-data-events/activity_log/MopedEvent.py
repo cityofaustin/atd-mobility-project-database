@@ -1,5 +1,7 @@
 import json, boto3
 import re
+import datetime
+import pytz
 
 import requests
 
@@ -31,7 +33,8 @@ class MopedEvent:
           $recordData:jsonb!,
           $description:jsonb!,
           $updatedBy:uuid!,
-          $operationType:String!
+          $operationType:String!,
+          $timestamp:timestamptz
         ) {
           insert_moped_activity_log(objects: {
             record_project_id: $recordProjectId,
@@ -42,6 +45,9 @@ class MopedEvent:
             updated_by: $updatedBy,
             operation_type: $operationType
           }) {
+            affected_rows
+          }
+          update_moped_project(where: {project_id: {_eq: $recordId}}, _set: {updated_at: $timestamp}) {
             affected_rows
           }
         }
@@ -304,6 +310,7 @@ class MopedEvent:
             "description": self.get_diff(),
             "updatedBy": self.get_event_session_var(variable="x-hasura-user-id", default=None),
             "operationType": self.get_operation_type(default=None),
+            "timestamp": datetime.datetime.now(tz=pytz.utc).isoformat(),
         }
 
     def request(self, variables: dict, headers: dict = {}) -> dict:

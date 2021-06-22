@@ -1,14 +1,31 @@
 #!/usr/bin/env bash
 
+#
+# Determine working stage based on branch name
+#
 case "${BRANCH_NAME}" in
   "production")
     export WORKING_STAGE="production";
   ;;
-  *)
+  "staging")
     export WORKING_STAGE="staging";
+  ;;
+  *)
+    export WORKING_STAGE="moped-test";
   ;;
 esac
 
+#
+# Override the working stage if this is a moped-test build.
+#
+if [[ "${MOPED_TEST_STAGE}" = "TRUE" ]]; then
+  export WORKING_STAGE="test";
+  export BUILD_TYPE="moped-test";
+else
+  export BUILD_TYPE="git push";
+fi;
+
+echo "BUILD_TYPE: ${BUILD_TYPE}";
 echo "SOURCE -> BRANCH_NAME: ${BRANCH_NAME}";
 echo "SOURCE -> WORKING_STAGE: ${WORKING_STAGE}";
 echo "PR_NUMBER: '${PR_NUMBER}'";
@@ -39,6 +56,7 @@ function bundle_function {
 #
 function generate_env_vars {
   FUNCTION_NAME_CONFIG=$1
+  echo "Generating Environment Variables for SQS";
   aws secretsmanager get-secret-value \
   --secret-id "ATD_MOPED_EVENT_SQS_ENV_${WORKING_STAGE^^}" | \
   jq -rc ".SecretString" > handler_config.json;

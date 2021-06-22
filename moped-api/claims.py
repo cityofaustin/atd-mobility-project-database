@@ -25,6 +25,18 @@ current_hasura_claims = LocalProxy(
 )
 
 
+def lower_case_email(user_email: str) -> str:
+    """
+    Attempts to lower case a user email address
+    :param user_email: The user email address in question
+    :return: 
+    """
+    try:
+        return str(user_email).lower()
+    except:
+        return user_email
+
+
 def get_claims(payload: LocalProxy) -> dict:
     """
     It's a handy way to extract the hasura claims from a valid payload.
@@ -91,6 +103,13 @@ def is_valid_user(current_cognito_jwt: str) -> bool:
     cognito_username = user_dict.get("cognito:username", "")
     is_email_verified = user_dict.get("email_verified", False)
 
+    # If not a string, then not valid user
+    if not isinstance(user_email, str):
+        return False
+
+    # Lower-case the email address
+    user_email = lower_case_email(user_email)
+
     # If not verified, then check it is an azure coa account
     if not is_email_verified:
         if str(cognito_username).startswith("azuread_") and str(
@@ -112,13 +131,14 @@ def is_valid_user(current_cognito_jwt: str) -> bool:
     return True
 
 
-def is_coa_staff(email: str) -> bool:
+def is_coa_staff(user_email: str) -> bool:
     """
     Returns True if the email address ends with city postfix
-    :param str email: The email address to be evaluated
+    :param str user_email: The email address to be evaluated
     :return bool:
     """
-    return email.endswith("@austintexas.gov")
+    user_email = lower_case_email(user_email)
+    return user_email.endswith("@austintexas.gov")
 
 
 def generate_iso_timestamp() -> str:
@@ -152,6 +172,7 @@ def retrieve_user_profile(user_email: str) -> dict:
     :return dict: The user profile as a dictionary
     """
     dynamodb = boto3.client("dynamodb", region_name="us-east-1")
+    user_email = lower_case_email(user_email)
     user_profile = dynamodb.get_item(
         TableName=AWS_COGNITO_DYNAMO_TABLE_NAME,
         Key={
@@ -171,6 +192,7 @@ def load_claims(user_email: str) -> dict:
     :param str user_email: The user email to retrieve the claims for
     :return dict: The claims JSON
     """
+    user_email = lower_case_email(user_email)
     profile = retrieve_user_profile(user_email=user_email)
     claims_encrypted = profile["claims"]["S"]
     cognito_uuid = profile["cognito_uuid"]["S"]
@@ -210,6 +232,7 @@ def put_claims(user_email: str, user_claims: dict, cognito_uuid: str = None, dat
     claims_str = json.dumps(user_claims)
     encrypted_claims = encrypt(fernet_key=AWS_COGNITO_DYNAMO_SECRET_KEY, content=claims_str)
     dynamodb = boto3.client("dynamodb", region_name="us-east-1")
+    user_email = lower_case_email(user_email)
     dynamodb.put_item(
         TableName=AWS_COGNITO_DYNAMO_TABLE_NAME,
         Item={
@@ -228,6 +251,7 @@ def delete_claims(user_email: str):
     :param str user_email: The user email to set the claims for
     """
     dynamodb = boto3.client("dynamodb", region_name="us-east-1")
+    user_email = lower_case_email(user_email)
     dynamodb.delete_item(
         TableName=AWS_COGNITO_DYNAMO_TABLE_NAME,
         Key={"user_id": {"S": user_email}},

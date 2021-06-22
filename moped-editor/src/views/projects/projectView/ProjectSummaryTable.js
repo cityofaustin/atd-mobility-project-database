@@ -51,6 +51,7 @@ const ProjectSummaryTable = ({ data, loading, error, refetch }) => {
         editable: true,
         multiline: true,
         multilineRows: 4,
+        widthSmallAndLarger: 12
       },
       start_date: {
         label: "Start date",
@@ -78,9 +79,9 @@ const ProjectSummaryTable = ({ data, loading, error, refetch }) => {
       },
       ...(capitallyFunded && {
         ecapris_subproject_id: {
-          label: "eCapris subproject ID",
+          label: "eCAPRIS subproject ID",
           type: "string",
-          placeholder: "Enter eCapris subproject ID",
+          placeholder: "Enter eCAPRIS subproject ID",
           emptyValue: "None",
           editable: true,
           format: value => (

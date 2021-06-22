@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
+import { createBrowserHistory } from "history";
+import { useLocation } from "react-router-dom";
 
 import {
   Box,
@@ -43,6 +45,8 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+const history = createBrowserHistory();
+
 /**
  * Renders a table search component with a search bar and search filters
  * @param {GQLAbstract} query - The GQLAbstract object as provided by the parent component
@@ -52,17 +56,26 @@ const useStyles = makeStyles(theme => ({
  * @return {JSX.Element}
  * @constructor
  */
-const GridTableSearch = ({ query, searchState, filterState, children }) => {
+const GridTableSearch = ({
+  query,
+  searchState,
+  filterState,
+  children,
+  filterQuery,
+}) => {
   const classes = useStyles();
   const theme = useTheme();
+  const queryPath = useLocation().pathname;
 
   /**
    * Controls what tab is being displayed
    * @type {boolean} tabValue
    * @function setTabValue - Sets the state of tabValue
-   * @default false
+   * @default if filter exists in url, 1. Otherwise 0.
    */
-  const [tabValue, setTabValue] = React.useState(0);
+  const [tabValue, setTabValue] = React.useState(
+    Array.from(filterQuery).length
+  );
 
   /**
    * When True, the dialog is open.
@@ -211,7 +224,9 @@ const GridTableSearch = ({ query, searchState, filterState, children }) => {
    */
   const handleSwitchToSearch = () => {
     filterState.setFilterParameters({});
-  }
+    filterQuery.delete("filter");
+    history.replace(`${queryPath}?`);
+  };
 
   /**
    * Clears the simple search when switching to filters
@@ -221,7 +236,7 @@ const GridTableSearch = ({ query, searchState, filterState, children }) => {
       value: "",
       column: "",
     });
-  }
+  };
 
   /**
    * Handles the click on a tab to switch between tabs
@@ -321,15 +336,14 @@ const GridTableSearch = ({ query, searchState, filterState, children }) => {
           </Grid>
 
           <TabPanel value={tabValue} index={0} dir={theme.direction}>
-            <GridTableSearchBar
-              query={query}
-              searchState={searchState}
-            />
+            <GridTableSearchBar query={query} searchState={searchState} />
           </TabPanel>
           <TabPanel value={tabValue} index={1} dir={theme.direction}>
             <GridTableFilters
-                query={query}
-                filterState={filterState}
+              query={query}
+              filterState={filterState}
+              filterQuery={filterQuery}
+              history={history}
             />
           </TabPanel>
         </Paper>

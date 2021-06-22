@@ -24,7 +24,7 @@ def create_sqs_event(event: dict) -> dict:
     return {
         "Records": [
             {
-                "body": event
+                "body": json.dumps(event)
             }
         ]
     }

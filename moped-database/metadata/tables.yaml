@@ -222,9 +222,9 @@
       columns:
       - component_id
       - component_name
-      - component_order
-      - date_added
       - status_id
+      - component_subtype
+      - line_representation
       backend_only: false
   - role: moped-editor
     permission:
@@ -232,9 +232,9 @@
       columns:
       - component_id
       - component_name
-      - component_order
-      - date_added
       - status_id
+      - component_subtype
+      - line_representation
       backend_only: false
   select_permissions:
   - role: moped-admin
@@ -242,27 +242,27 @@
       columns:
       - component_id
       - component_name
-      - component_order
-      - date_added
       - status_id
+      - component_subtype
+      - line_representation
       filter: {}
   - role: moped-editor
     permission:
       columns:
       - component_id
       - component_name
-      - component_order
-      - date_added
       - status_id
+      - component_subtype
+      - line_representation
       filter: {}
   - role: moped-viewer
     permission:
       columns:
       - component_id
       - component_name
-      - component_order
-      - date_added
       - status_id
+      - component_subtype
+      - line_representation
       filter: {}
   update_permissions:
   - role: moped-admin
@@ -270,9 +270,9 @@
       columns:
       - component_id
       - component_name
-      - component_order
-      - date_added
       - status_id
+      - component_subtype
+      - line_representation
       filter: {}
       check: {}
   - role: moped-editor
@@ -280,9 +280,9 @@
       columns:
       - component_id
       - component_name
-      - component_order
-      - date_added
       - status_id
+      - component_subtype
+      - line_representation
       filter: {}
       check: {}
 - table:
@@ -1066,6 +1066,65 @@
       - component_id
       - name
       - description
+      filter: {}
+      check: {}
+- table:
+    schema: public
+    name: moped_proj_components_subcomponents
+  insert_permissions:
+  - role: moped-admin
+    permission:
+      check: {}
+      columns:
+      - component_subcomponent_id
+      - project_component_id
+      - subcomponent_id
+      backend_only: false
+  - role: moped-editor
+    permission:
+      check: {}
+      columns:
+      - component_subcomponent_id
+      - project_component_id
+      - subcomponent_id
+      backend_only: false
+  select_permissions:
+  - role: moped-admin
+    permission:
+      columns:
+      - component_subcomponent_id
+      - project_component_id
+      - subcomponent_id
+      filter: {}
+  - role: moped-editor
+    permission:
+      columns:
+      - component_subcomponent_id
+      - project_component_id
+      - subcomponent_id
+      filter: {}
+  - role: moped-viewer
+    permission:
+      columns:
+      - component_subcomponent_id
+      - project_component_id
+      - subcomponent_id
+      filter: {}
+  update_permissions:
+  - role: moped-admin
+    permission:
+      columns:
+      - component_subcomponent_id
+      - project_component_id
+      - subcomponent_id
+      filter: {}
+      check: {}
+  - role: moped-editor
+    permission:
+      columns:
+      - component_subcomponent_id
+      - project_component_id
+      - subcomponent_id
       filter: {}
       check: {}
 - table:
@@ -2245,160 +2304,174 @@
     permission:
       check: {}
       columns:
-      - project_milestone_id
-      - project_id
-      - milestone_name
-      - milestone_description
-      - milestone_order
-      - completion_percentage
-      - milestone_status
-      - milestone_privacy
-      - milestone_start
-      - milestone_end
-      - milestone_priority
-      - milestone_date_type
-      - milestone_related_phase_id
-      - is_current_milestone
       - completed
-      - started_by_user_id
       - completed_by_user_id
+      - completion_percentage
       - date_added
+      - is_current_milestone
+      - milestone_date_type
+      - milestone_description
+      - milestone_end
+      - milestone_estimate
+      - milestone_name
+      - milestone_order
+      - milestone_priority
+      - milestone_privacy
+      - milestone_related_phase_id
+      - milestone_start
+      - milestone_status
+      - project_id
+      - project_milestone_id
+      - started_by_user_id
+      - status_id
       backend_only: false
   - role: moped-editor
     permission:
       check: {}
       columns:
-      - project_milestone_id
-      - project_id
-      - milestone_name
-      - milestone_description
-      - milestone_order
-      - completion_percentage
-      - milestone_status
-      - milestone_privacy
-      - milestone_start
-      - milestone_end
-      - milestone_priority
-      - milestone_date_type
-      - milestone_related_phase_id
-      - is_current_milestone
       - completed
-      - started_by_user_id
       - completed_by_user_id
+      - completion_percentage
       - date_added
+      - is_current_milestone
+      - milestone_date_type
+      - milestone_description
+      - milestone_end
+      - milestone_estimate
+      - milestone_name
+      - milestone_order
+      - milestone_priority
+      - milestone_privacy
+      - milestone_related_phase_id
+      - milestone_start
+      - milestone_status
+      - project_id
+      - project_milestone_id
+      - started_by_user_id
+      - status_id
       backend_only: false
   select_permissions:
   - role: moped-admin
     permission:
       columns:
-      - project_milestone_id
-      - project_id
-      - milestone_name
-      - milestone_description
-      - milestone_order
-      - completion_percentage
-      - milestone_status
-      - milestone_privacy
-      - milestone_start
-      - milestone_end
-      - milestone_priority
-      - milestone_date_type
-      - milestone_related_phase_id
-      - is_current_milestone
       - completed
-      - started_by_user_id
       - completed_by_user_id
+      - completion_percentage
       - date_added
+      - is_current_milestone
+      - milestone_date_type
+      - milestone_description
+      - milestone_end
+      - milestone_estimate
+      - milestone_name
+      - milestone_order
+      - milestone_priority
+      - milestone_privacy
+      - milestone_related_phase_id
+      - milestone_start
+      - milestone_status
+      - project_id
+      - project_milestone_id
+      - started_by_user_id
+      - status_id
       filter: {}
   - role: moped-editor
     permission:
       columns:
-      - project_milestone_id
-      - project_id
-      - milestone_name
-      - milestone_description
-      - milestone_order
-      - completion_percentage
-      - milestone_status
-      - milestone_privacy
-      - milestone_start
-      - milestone_end
-      - milestone_priority
-      - milestone_date_type
-      - milestone_related_phase_id
-      - is_current_milestone
       - completed
-      - started_by_user_id
       - completed_by_user_id
+      - completion_percentage
       - date_added
+      - is_current_milestone
+      - milestone_date_type
+      - milestone_description
+      - milestone_end
+      - milestone_estimate
+      - milestone_name
+      - milestone_order
+      - milestone_priority
+      - milestone_privacy
+      - milestone_related_phase_id
+      - milestone_start
+      - milestone_status
+      - project_id
+      - project_milestone_id
+      - started_by_user_id
+      - status_id
       filter: {}
   - role: moped-viewer
     permission:
       columns:
-      - project_milestone_id
-      - project_id
-      - milestone_name
-      - milestone_description
-      - milestone_order
-      - completion_percentage
-      - milestone_status
-      - milestone_privacy
-      - milestone_start
-      - milestone_end
-      - milestone_priority
-      - milestone_date_type
-      - milestone_related_phase_id
-      - is_current_milestone
       - completed
-      - started_by_user_id
       - completed_by_user_id
+      - completion_percentage
       - date_added
+      - is_current_milestone
+      - milestone_date_type
+      - milestone_description
+      - milestone_end
+      - milestone_estimate
+      - milestone_name
+      - milestone_order
+      - milestone_priority
+      - milestone_privacy
+      - milestone_related_phase_id
+      - milestone_start
+      - milestone_status
+      - project_id
+      - project_milestone_id
+      - started_by_user_id
+      - status_id
       filter: {}
   update_permissions:
   - role: moped-admin
     permission:
       columns:
-      - project_milestone_id
-      - project_id
-      - milestone_name
-      - milestone_description
-      - milestone_order
-      - completion_percentage
-      - milestone_status
-      - milestone_privacy
-      - milestone_start
-      - milestone_end
-      - milestone_priority
-      - milestone_date_type
-      - milestone_related_phase_id
-      - is_current_milestone
       - completed
-      - started_by_user_id
       - completed_by_user_id
+      - completion_percentage
       - date_added
+      - is_current_milestone
+      - milestone_date_type
+      - milestone_description
+      - milestone_end
+      - milestone_estimate
+      - milestone_name
+      - milestone_order
+      - milestone_priority
+      - milestone_privacy
+      - milestone_related_phase_id
+      - milestone_start
+      - milestone_status
+      - project_id
+      - project_milestone_id
+      - started_by_user_id
+      - status_id
       filter: {}
       check: {}
   - role: moped-editor
     permission:
       columns:
-      - project_milestone_id
-      - project_id
-      - milestone_name
-      - milestone_description
-      - milestone_order
-      - completion_percentage
-      - milestone_status
-      - milestone_privacy
-      - milestone_start
-      - milestone_end
-      - milestone_priority
-      - milestone_date_type
-      - milestone_related_phase_id
-      - is_current_milestone
       - completed
-      - started_by_user_id
       - completed_by_user_id
+      - completion_percentage
       - date_added
+      - is_current_milestone
+      - milestone_date_type
+      - milestone_description
+      - milestone_end
+      - milestone_estimate
+      - milestone_name
+      - milestone_order
+      - milestone_priority
+      - milestone_privacy
+      - milestone_related_phase_id
+      - milestone_start
+      - milestone_status
+      - project_id
+      - project_milestone_id
+      - started_by_user_id
+      - status_id
       filter: {}
       check: {}
 - table:
@@ -4162,6 +4235,9 @@
       check: {}
 - table:
     schema: public
+    name: moped_subcomponents
+- table:
+    schema: public
     name: moped_subphases
   insert_permissions:
   - role: moped-admin
@@ -4439,84 +4515,87 @@
   - role: moped-admin
     permission:
       columns:
-      - project_uuid
-      - project_id
-      - project_name
-      - project_description
-      - project_description_public
-      - ecapris_subproject_id
-      - project_importance
-      - project_order
-      - current_status
-      - timeline_id
-      - current_phase
-      - end_date
-      - project_length
-      - start_date
-      - fiscal_year
-      - capitally_funded
-      - project_priority
-      - date_added
       - added_by
+      - capitally_funded
+      - current_phase
+      - current_status
+      - date_added
+      - ecapris_subproject_id
+      - end_date
+      - fiscal_year
       - is_retired
       - milestone_id
-      - status_id
+      - project_description
+      - project_description_public
+      - project_id
+      - project_importance
+      - project_length
+      - project_name
+      - project_order
+      - project_priority
       - project_team_members
+      - project_uuid
+      - start_date
+      - status_id
+      - timeline_id
+      - updated_at
       filter: {}
       allow_aggregations: true
   - role: moped-editor
     permission:
       columns:
-      - project_uuid
-      - project_id
-      - project_name
-      - project_description
-      - project_description_public
-      - ecapris_subproject_id
-      - project_importance
-      - project_order
-      - current_status
-      - timeline_id
-      - current_phase
-      - end_date
-      - project_length
-      - start_date
-      - fiscal_year
-      - capitally_funded
-      - project_priority
-      - date_added
       - added_by
+      - capitally_funded
+      - current_phase
+      - current_status
+      - date_added
+      - ecapris_subproject_id
+      - end_date
+      - fiscal_year
       - is_retired
       - milestone_id
-      - status_id
+      - project_description
+      - project_description_public
+      - project_id
+      - project_importance
+      - project_length
+      - project_name
+      - project_order
+      - project_priority
       - project_team_members
+      - project_uuid
+      - start_date
+      - status_id
+      - timeline_id
+      - updated_at
       filter: {}
       allow_aggregations: true
   - role: moped-viewer
     permission:
       columns:
-      - project_uuid
-      - project_id
-      - project_name
-      - project_description
-      - project_description_public
-      - ecapris_subproject_id
-      - project_importance
-      - project_order
-      - current_status
-      - timeline_id
-      - current_phase
-      - end_date
-      - project_length
-      - start_date
-      - fiscal_year
-      - capitally_funded
-      - project_priority
-      - date_added
       - added_by
+      - capitally_funded
+      - current_phase
+      - current_status
+      - date_added
+      - ecapris_subproject_id
+      - end_date
+      - fiscal_year
       - is_retired
       - milestone_id
-      - status_id
+      - project_description
+      - project_description_public
+      - project_id
+      - project_importance
+      - project_length
+      - project_name
+      - project_order
+      - project_priority
       - project_team_members
+      - project_uuid
+      - start_date
+      - status_id
+      - timeline_id
+      - updated_at
       filter: {}
       allow_aggregations: true

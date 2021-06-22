@@ -216,25 +216,27 @@ const NewProjectView = () => {
     // Change the initial state...
     setLoading(true);
 
-    const cleanedPersonnel =
-      personnel.length > 0
-        ? personnel
-            // We need to flatten (reverse the nesting) for role_ids
-            .map(item => {
-              // For every personnel, iterate through role_ids
-              return item.role_id.map(role_id => {
-                // build a new object with specific values
-                return {
-                  role_id: role_id,
-                  user_id: item.user_id,
-                };
-              });
-            })[0] // The array should be single
-            // Now we proceed as normal...
-            .map(row => ({
-              ...filterObjectByKeys(row, ["tableData"]),
-            }))
-        : [];
+    // A variable array of objects
+    let cleanedPersonnel = [];
+
+    // If personnel are added to the project, handle roles and remove unneeded data
+    personnel
+      // We need to flatten (reverse the nesting) for role_ids
+      .forEach(item => {
+        // For every personnel, iterate through role_ids
+        item.role_id.forEach((role_id, index) => {
+          cleanedPersonnel.push({
+            role_id: role_id,
+            user_id: item.user_id,
+            status_id: 1,
+            notes: index === 0 ? item?.notes ?? null : null,
+          });
+        });
+      });
+
+    cleanedPersonnel = cleanedPersonnel.map(row => ({
+      ...filterObjectByKeys(row, ["tableData"]),
+    }));
 
     const projectFeatures = featureCollection.features.map(feature => ({
       location: feature,
