@@ -11,9 +11,12 @@ import {
   Switch,
   Select,
   MenuItem,
+  Typography,
 } from "@material-ui/core";
-import AddBoxIcon from "@material-ui/icons/AddBox";
-import MaterialTable, { MTableAction } from "material-table";
+import { AddCircle as AddCircleIcon } from "@material-ui/icons";
+import MaterialTable, { MTableEditRow, MTableAction } from "material-table";
+
+import typography from "../../../theme/typography";
 
 // Query
 import {
@@ -23,7 +26,7 @@ import {
   ADD_PROJECT_PHASE,
   UPDATE_PROJECT_MILESTONES_MUTATION,
   DELETE_PROJECT_MILESTONE,
-  ADD_PROJECT_MILESTONE
+  ADD_PROJECT_MILESTONE,
 } from "../../../queries/project";
 import { useQuery, useMutation } from "@apollo/client";
 import { useParams } from "react-router-dom";
@@ -286,7 +289,7 @@ const ProjectTimeline = ({ refetch: refetchSummary }) => {
    */
   const phasesColumns = [
     {
-      title: "Phase Name",
+      title: "Phase name",
       field: "phase_name",
       lookup: phaseNameLookup,
       editComponent: props => (
@@ -294,7 +297,7 @@ const ProjectTimeline = ({ refetch: refetchSummary }) => {
       ),
     },
     {
-      title: "Sub-Phase Name",
+      title: "Sub-phase name",
       field: "subphase_name",
       lookup: subphaseNameLookup,
       editComponent: props => (
@@ -306,15 +309,7 @@ const ProjectTimeline = ({ refetch: refetchSummary }) => {
       ),
     },
     {
-      title: "Active?",
-      field: "is_current_phase",
-      lookup: { true: "Yes", false: "No" },
-      editComponent: props => (
-        <ToggleEditComponent {...props} name="is_current_phase" />
-      ),
-    },
-    {
-      title: "Start Date",
+      title: "Start date",
       field: "phase_start",
       render: rowData => moment(rowData.phase_start).format("MM/DD/YYYY"),
       editComponent: props => (
@@ -326,11 +321,19 @@ const ProjectTimeline = ({ refetch: refetchSummary }) => {
       ),
     },
     {
-      title: "End Date",
+      title: "End date",
       field: "phase_end",
       render: rowData => moment(rowData.phase_end).format("MM/DD/YYYY"),
       editComponent: props => (
         <DateFieldEditComponent {...props} name="phase_end" label="End Date" />
+      ),
+    },
+    {
+      title: "Current",
+      field: "is_current_phase",
+      lookup: { true: "Yes", false: "No" },
+      editComponent: props => (
+        <ToggleEditComponent {...props} name="is_current_phase" />
       ),
     },
   ];
@@ -351,6 +354,8 @@ const ProjectTimeline = ({ refetch: refetchSummary }) => {
     {
       title: "Completion estimate",
       field: "milestone_estimate",
+      render: rowData =>
+        moment(rowData.milestone_estimate).format("MM/DD/YYYY"),
       editComponent: props => (
         <DateFieldEditComponent
           {...props}
@@ -362,6 +367,7 @@ const ProjectTimeline = ({ refetch: refetchSummary }) => {
     {
       title: "Date completed",
       field: "milestone_end",
+      render: rowData => moment(rowData.milestone_end).format("MM/DD/YYYY"),
       editComponent: props => (
         <DateFieldEditComponent
           {...props}
@@ -385,14 +391,24 @@ const ProjectTimeline = ({ refetch: refetchSummary }) => {
       <CardContent>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <div style={{ maxWidth: "100%" }}>
+            <Box mb={2} style={{ maxWidth: "100%" }}>
               <MaterialTable
                 columns={phasesColumns}
                 data={data.moped_proj_phases}
-                title="Project Phases"
                 // Action component customized as described in this gh-issue:
                 // https://github.com/mbrn/material-table/issues/2133
                 components={{
+                  EditRow: props => (
+                    <MTableEditRow
+                      {...props}
+                      onKeyDown={e => {
+                        if (e.keyCode === 13) {
+                          // Bypass default MaterialTable behavior of submitting the entire form when a user hits enter
+                          // See https://github.com/mbrn/material-table/pull/2008#issuecomment-662529834
+                        }
+                      }}
+                    />
+                  ),
                   Action: props => {
                     // If isn't the add action
                     if (
@@ -402,10 +418,16 @@ const ProjectTimeline = ({ refetch: refetchSummary }) => {
                       return <MTableAction {...props} />;
                     } else {
                       return (
-                        <div
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          size="large"
+                          startIcon={<AddCircleIcon />}
                           ref={addActionRefPhases}
                           onClick={props.action.onClick}
-                        />
+                        >
+                          Add phase
+                        </Button>
                       );
                     }
                   },
@@ -497,30 +519,51 @@ const ProjectTimeline = ({ refetch: refetchSummary }) => {
                     });
                   },
                 }}
+                title={
+                  <Typography variant="h2" color="primary">
+                    Project phases
+                  </Typography>
+                }
                 options={{
+                  ...(data.moped_proj_phases.length < 26 && {
+                    paging: false,
+                  }),
+                  search: false,
+                  rowStyle: { fontFamily: typography.fontFamily },
                   actionsColumnIndex: -1,
                 }}
+                localization={{
+                  header: {
+                    actions: "",
+                  },
+                  body: {
+                    emptyDataSourceMessage: (
+                      <Typography variant="body1">
+                        No project phases to display
+                      </Typography>
+                    ),
+                  },
+                }}
               />
-            </div>
-            <Box pt={2}>
-              <Button
-                variant="contained"
-                color="primary"
-                size="large"
-                startIcon={<AddBoxIcon />}
-                onClick={() => addActionRefPhases.current.click()}
-              >
-                Add phase
-              </Button>
             </Box>
           </Grid>
           <Grid item xs={12}>
-            <div style={{ maxWidth: "100%" }}>
+            <Box style={{ maxWidth: "100%" }}>
               <MaterialTable
                 columns={milestoneColumns}
                 data={data.moped_proj_milestones}
-                title="Project Milestones"
                 components={{
+                  EditRow: props => (
+                    <MTableEditRow
+                      {...props}
+                      onKeyDown={e => {
+                        if (e.keyCode === 13) {
+                          // Bypass default MaterialTable behavior of submitting the entire form when a user hits enter
+                          // See https://github.com/mbrn/material-table/pull/2008#issuecomment-662529834
+                        }
+                      }}
+                    />
+                  ),
                   Action: props => {
                     // If isn't the add action
                     if (
@@ -530,10 +573,16 @@ const ProjectTimeline = ({ refetch: refetchSummary }) => {
                       return <MTableAction {...props} />;
                     } else {
                       return (
-                        <div
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          size="large"
+                          startIcon={<AddCircleIcon />}
                           ref={addActionRefMilestones}
                           onClick={props.action.onClick}
-                        />
+                        >
+                          Add milestone
+                        </Button>
                       );
                     }
                   },
@@ -610,21 +659,32 @@ const ProjectTimeline = ({ refetch: refetchSummary }) => {
                     });
                   },
                 }}
+                title={
+                  <Typography variant="h2" color="primary">
+                    Project milestones
+                  </Typography>
+                }
                 options={{
+                  ...(data.moped_proj_milestones.length < 26 && {
+                    paging: false,
+                  }),
+                  search: false,
+                  rowStyle: { fontFamily: typography.fontFamily },
                   actionsColumnIndex: -1,
                 }}
+                localization={{
+                  header: {
+                    actions: "",
+                  },
+                  body: {
+                    emptyDataSourceMessage: (
+                      <Typography variant="body1">
+                        No project milestones to display
+                      </Typography>
+                    ),
+                  },
+                }}
               />
-            </div>
-            <Box pt={2}>
-              <Button
-                variant="contained"
-                color="primary"
-                size="large"
-                startIcon={<AddBoxIcon />}
-                onClick={() => addActionRefMilestones.current.click()}
-              >
-                Add milestone
-              </Button>
             </Box>
           </Grid>
         </Grid>

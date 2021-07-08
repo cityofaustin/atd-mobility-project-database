@@ -358,7 +358,7 @@ const ProjectTeamTable = ({
       <MaterialTable
         columns={columns}
         components={{
-          EditRow: (props, rowData) => (
+          EditRow: props => (
             <MTableEditRow
               {...props}
               onKeyDown={e => {
@@ -415,7 +415,11 @@ const ProjectTeamTable = ({
             actions: "",
           },
           body: {
-            emptyDataSourceMessage: <Typography variant="body1">No team members to display</Typography>,
+            emptyDataSourceMessage: (
+              <Typography variant="body1">
+                No team members to display
+              </Typography>
+            ),
           },
         }}
         icons={{ Delete: ClearIcon }}

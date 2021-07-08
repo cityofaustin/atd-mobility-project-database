@@ -5,17 +5,18 @@ import {
   Button,
   CardContent,
   CircularProgress,
-  Grid,
-  Icon,
   Link,
   TextField,
+  Typography,
 } from "@material-ui/core";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import typography from "../../../theme/typography";
-import MaterialTable from "material-table";
-import { Clear as ClearIcon } from "@material-ui/icons";
-
+import MaterialTable, { MTableEditRow, MTableAction } from "material-table";
+import {
+  AddCircle as AddCircleIcon,
+  Clear as ClearIcon,
+} from "@material-ui/icons";
 import { useMutation, useQuery } from "@apollo/client";
 
 import humanReadableFileSize from "../../../utils/humanReadableFileSize";
@@ -90,11 +91,13 @@ const ProjectFiles = props => {
           created_by: getDatabaseId(user),
         },
       },
-    }).then(() => {
-      setDialogOpen(false);
-    }).finally(() => {
-      refetch();
-    });
+    })
+      .then(() => {
+        setDialogOpen(false);
+      })
+      .finally(() => {
+        refetch();
+      });
   };
 
   /**
@@ -104,6 +107,12 @@ const ProjectFiles = props => {
     variables: { projectId },
     fetchPolicy: "no-cache",
   });
+
+  /** addAction Ref - mutable ref object used to access add action button
+   * imperatively.
+   * @type {object} addActionRef
+   * */
+  const addActionRef = React.useRef();
 
   /**
    * Mutations
@@ -174,11 +183,14 @@ const ProjectFiles = props => {
     },
     {
       title: "Date uploaded",
-      customSort: (a, b) =>  new Date(a?.create_date ?? 0) - new Date(b?.create_date ?? 0),
+      customSort: (a, b) =>
+        new Date(a?.create_date ?? 0) - new Date(b?.create_date ?? 0),
       render: record => (
         <span>
           {record?.create_date
-            ? new Date(record.create_date).toLocaleString('en-US', {timeZone: 'UTC'})
+            ? new Date(record.create_date).toLocaleString("en-US", {
+                timeZone: "UTC",
+              })
             : "N/A"}
         </span>
       ),
@@ -194,37 +206,76 @@ const ProjectFiles = props => {
 
   return (
     <CardContent>
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={12}>
-          <Grid container>
-            <Grid sm={12} md={6}>
-              <h2 className={classes.title}>Files</h2>
-            </Grid>
-            <Grid sm={12} md={6}>
-              <Button
-                variant="contained"
-                color="primary"
-                className={classes.uploadFileButton}
-                startIcon={<Icon>backup</Icon>}
-                onClick={handleClickUploadFile}
-              >
-                Upload File
-              </Button>
-            </Grid>
-          </Grid>
-        </Grid>
-      </Grid>
       <ApolloErrorHandler errors={error}>
         <MaterialTable
           columns={columns}
           data={data?.moped_project_files ?? null}
-          title={null}
+          title={
+            <Typography variant="h2" color="primary">
+              Files
+            </Typography>
+          }
+          // Action component customized as described in this gh-issue:
+          // https://github.com/mbrn/material-table/issues/2133
+          components={{
+            EditRow: props => (
+              <MTableEditRow
+                {...props}
+                onKeyDown={e => {
+                  if (e.keyCode === 13) {
+                    // Bypass default MaterialTable behavior of submitting the entire form when a user hits enter
+                    // See https://github.com/mbrn/material-table/pull/2008#issuecomment-662529834
+                  }
+                }}
+              />
+            ),
+            Action: props => {
+              // If isn't the add action
+              if (
+                typeof props.action === typeof Function ||
+                props.action.tooltip !== "Add"
+              ) {
+                return <MTableAction {...props} />;
+              } else {
+                return (
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    size="large"
+                    className={classes.uploadFileButton}
+                    startIcon={<AddCircleIcon />}
+                    ref={addActionRef}
+                    onClick={handleClickUploadFile}
+                  >
+                    Add file
+                  </Button>
+                );
+              }
+            },
+          }}
           icons={{ Delete: ClearIcon }}
           options={{
-            search: true,
+            ...(data.moped_project_files.length < 26 && {
+              paging: false,
+            }),
+            search: false,
             rowStyle: { fontFamily: typography.fontFamily },
+            actionsColumnIndex: -1,
+          }}
+          localization={{
+            header: {
+              actions: "",
+            },
+            body: {
+              emptyDataSourceMessage: (
+                <Typography variant="body1">No files to display</Typography>
+              ),
+            },
           }}
           editable={{
+            onRowAdd: () => {
+              handleClickUploadFile();
+            },
             onRowUpdate: (newData, oldData) =>
               updateProjectFileAttachment({
                 variables: {
