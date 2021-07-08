@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-
+MOPED_TEST_API_URL="https://moped-api-test.austinmobility.io"
 APPLICATION_NAME="atd-moped-editor-development";
 HASURA_REPO_NAME="graphql-engine-heroku";
 HASURA_SERVER_ENDPOINT="https://${APPLICATION_NAME}.herokuapp.com"
@@ -74,6 +74,9 @@ function build_database() {
 
   print_header "Change application configuration settings";
   heroku config:set --app="${APPLICATION_NAME}"  \
+    MOPED_API_ACTIONS_URL="${MOPED_TEST_API_URL}/actions" \
+    MOPED_API_EVENTS_URL="${MOPED_TEST_API_URL}/events" \
+    MOPED_API_APIKEY="${ATD_MOPED_DEVSTAGE_HASURA_MOPED_API_APIKEY}" \
     HASURA_GRAPHQL_DEV_MODE=false \
     HASURA_GRAPHQL_ENABLE_CONSOLE=true \
     HASURA_GRAPHQL_ADMIN_SECRET="${ATD_MOPED_DEVSTAGE_HASURA_GRAPHQL_ADMIN_SECRET}" \
